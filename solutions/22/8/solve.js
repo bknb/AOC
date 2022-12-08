@@ -97,7 +97,7 @@ function printScore(tree) {
            : (visible[i][j] < 16  
               ? tree[i][j].yellow
               : (visible[i][j] < 64 
-                 ? tree[i][j].red
+                ? tree[i][j].red
                  : tree[i][j])));
     log(row);
   }
