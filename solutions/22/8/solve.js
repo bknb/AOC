@@ -16,10 +16,7 @@ let visible = [];
 solveOptions().then(startSolver);
   
 function solve1(input) {
-  init(input);
-  for(let i=0;i<input.length;i++)
-    for(let j=0;j<input[i].length;j++)
-      visible[i][j] = getVisible(input,i,j)
+  visible = input.map((r,x)=>r.map((c,y)=>getVisible(input,x,y)));
       
   printTree(input);
 
