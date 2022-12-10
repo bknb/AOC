@@ -11,46 +11,41 @@ colors.setTheme({
 
 let debug, test;
 
-const dirMap = {'L':0,'R':1,'D':2,'U':3}
-
-const H = [0,0];
-let T = [0,0];
-
 solveOptions().then(startSolver);
   
 function solve1(input) {
-  log(input);
-  let result = input.reduce((a,[d,s])=>
-    a.concat(Array.from(Array(s)).map(()=>{
-      H[d>>1]+=d&1?1:-1;
-      return [...H];
-    })),[[0,0]]);
-  log(result);
-  result = result.map(c=>T=n(T,c));
-  log(result);
-  return [...new Set(result.map(x=>x.join()))].length;
+  let s = 1;
+  let c = 1;
+  let result = 0;
+  const stops = input.map(x=>[s+=x,c+=x===0?1:2]);
+  for(let i=6;i-->0;) result+=value(20+40*i); 
+  
+  return result;
+
+  function value(b) {
+    return stops.filter(([,e])=>e<=b).slice(-1)[0][0] * b;
+  }
 }
 
 function solve2(input) {
-  log(input);
-  let result = input.reduce((a,[d,s])=>
-    a.concat(Array.from(Array(s)).map(()=>{
-      H[d>>1]+=d&1?1:-1;
-      return [...H];
-    })),[[0,0]]);
-  log(result);
-  for (let i=9;i-->0;) {
-    let T = [0,0];
-    result = result.map(c=>T=n(T,c))
-      .filter((x,i,a)=>i===0||x[0]!==a[i-1][0]||x[1]!==a[i-1][1]);
-    log(result);
+  let s = 0;
+  let y = 0;
+  let result = '';
+  let stops = [[s,0]].concat(input.map(x=>[s+=x,y+=x===0?1:2]))
+    .reverse();
+  log(stops);
+  for(let i=0;i<240;i++) {
+    if (i%40===0 && i!=0) result+='\n';
+    let d = (i - stops.find(([,x])=>i>=x)[0])%40;
+    log(i,d,stops.find(([,x])=>i>=x));
+    result+=0<=d&&d<3?'#':'.';
   }
-  return [...new Set(result.map(x=>x.join()))].length;
+  return result;
 }
 
 function prepareInput(data) {
   return data.split('\n')
-    .map(x=>[dirMap[x[0]],+x.match(/\d+/)[0]]);
+    .map(x=>/-?\d+/.test(x)?+x.match(/-?\d+/)[0]:0);
 }
 
 function startSolver({options}) {
@@ -88,17 +83,4 @@ function handleInput(options) {
 
 function log(...text) {
   if(debug) console.log(...text);
-}
-
-function n(t,h) {
-  const result = [...t];
-  if(Math.abs(t[0]-h[0]) === 2) {
-    result[0] = (t[0]+h[0])/2;
-    result[1] = Math.abs(t[1]-h[1]) === 2 ? (t[1]+h[1])/2 : h[1];
-  }
-  if(Math.abs(t[1]-h[1]) === 2) {
-    result[1] = (t[1]+h[1])/2;
-    result[0] = Math.abs(t[0]-h[0]) === 2 ? (t[0]+h[0])/2 : h[0];
-  }
-  return result;
 }
