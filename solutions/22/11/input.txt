@@ -28,28 +28,28 @@ Monkey 3:
 
 Monkey 4:
   Starting items: 98, 98, 79
-  Operation: new = old + 3n
+  Operation: new = old + 3
   Test: divisible by 17
     If true: throw to monkey 1
     If false: throw to monkey 0
 
 Monkey 5:
   Starting items: 76
-  Operation: new = old + 4n
+  Operation: new = old + 4
   Test: divisible by 13
     If true: throw to monkey 6
     If false: throw to monkey 3
 
 Monkey 6:
   Starting items: 52, 51, 84, 54
-  Operation: new = old * 17n
+  Operation: new = old * 17
   Test: divisible by 19
     If true: throw to monkey 4
     If false: throw to monkey 1
 
 Monkey 7:
   Starting items: 82, 86, 91, 79, 94, 92, 59, 94
-  Operation: new = old + 7n
+  Operation: new = old + 7
   Test: divisible by 2
     If true: throw to monkey 5
     If false: throw to monkey 3

@@ -10,6 +10,7 @@ colors.setTheme({
 });
 
 let debug, test;
+let normalizer = 1;
 
 solveOptions().then(startSolver);
   
@@ -21,7 +22,7 @@ function solve1(input) {
     input.forEach(({items,stress,next},j)=>{
       log(`Monkey ${j}: ${items}`)
       while(items.length) {
-        let item = stress(items.pop())/3n;
+        let item = stress(items.pop())/3;
         counts[j]++;
         input[next(item)].items.push(item);
       }
@@ -33,22 +34,24 @@ function solve1(input) {
 }
 
 function solve2(input) {
-  let counts = Array.from(Array(input.length)).map(()=>0);
+  let counts = Array.from(Array(input.length)).fill(0);
+  const allItems = [];
+  input.forEach(monkey=>monkey.items=monkey.items.map(i=>allItems.push(i)-1));
+  input.map(monkey=>monkey.lvls=allItems.map(lvl=>lvl%monkey.div));
   for(let i=1;i<=10000;i++) {
-    input.forEach(({items,stress,next},j)=>{
+    input.forEach(({items,stress,next,lvls},j)=>{
       while(items.length) {
-        let item = stress(items.pop());
+        const index = items.pop();
+        input.forEach(({lvls,div})=>lvls[index]=stress(lvls[index]) % div)
         counts[j]++;
-        input[next(item)].items.push(item);
+        input[next(lvls[index])].items.push(index);
       }
     });
     if (i===1 || i === 20 || i%1000 === 0) {
       log(`---Round ${i}---`.blue);
       input.forEach((a,j)=>log(`Monkey ${j}: ${counts[j]}`));
-      //input.forEach(({items},j)=>log(items));
     }
   }
-  log(counts);
   return counts.sort((a,b)=>a-b).slice(-2).reduce((a,c)=>a*c,1);
 }
 
@@ -56,11 +59,12 @@ function prepareInput(data) {
   return data.split('\n\n')
     .map(x=>x.split('\n').slice(1))
     .map(x=>{
+      const div = x[2].match(/\d+/)[0];
       return {
-        items: x[0].match(/\d+/g).map(y=>BigInt(y)),
+        div,
+        items: x[0].match(/\d+/g).map(y=>+y),
         stress: old=>eval(x[1].match(/new = (.*)$/)[1]),
-        next: lvl=>lvl%BigInt(x[2].match(/\d+/)[0])===0n
-          ? +x[3].match(/\d+/)[0] : +x[4].match(/\d+/)[0]
+        next: lvl=>lvl%div===0? +x[3].match(/\d+/)[0] : +x[4].match(/\d+/)[0]
       }
     });
 }

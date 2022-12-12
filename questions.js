@@ -15,14 +15,15 @@ exports.intro = ()=>inquirer
       name: "year",
       message: "Select a year",
       when: ({action})=>action==="solve",
-      choices: getDirectories('./solutions').reverse()
+      choices: getDirectories('./solutions').sort((a,b)=>b-a)
     },
     {
       type: "list",
       name: "day",
       message: "Select a day",
       when: ({action})=>action==="solve",
-      choices: ({year})=>getDirectories(`./solutions/${year}`).reverse()
+      choices: ({year})=>getDirectories(`./solutions/${year}`)
+        .sort((a,b)=>b-a)
     },
     {
       type: "input",
@@ -72,7 +73,7 @@ exports.solveOptions = ()=>inquirer
 function getDirectories(path) {
   return fs.readdirSync(path, { withFileTypes: true })
     .filter((item) => item.isDirectory())
-    .map((item) => item.name);
+    .map((item) => +item.name);
 }
 
 function lastChoice() {
