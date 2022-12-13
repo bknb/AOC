@@ -14,15 +14,52 @@ let debug, test, input;
 solveOptions().then(startSolver);
   
 function solve1() {
-  return null;
+  const res = input.map(([l,r])=>rightOrder(l,r));
+  log(res);
+  return res.reduce((a,c,i)=>c<1?a+i+1:a,0);
 }
 
 function solve2() {
-  return null;
+  const d1 = [[2]];
+  const d2 = [[6]];
+  const res = input.reduce((a,c)=>a.concat(c),[])
+    .concat([d1,d2]);
+  log(res);
+  res.sort(rightOrder);
+  let div1 = res.findIndex(x=>x===d1)+1;
+  let div2 = res.findIndex(x=>x===d2)+1;
+  log(res);
+  return div1 * div2;
 }
 
 function prepareData(data) {
-  return data;
+  return data.split('\n\n')
+    .map(p=>p.split('\n').map(r=>JSON.parse(r)));
+}
+  
+function rightOrder(l,r) {
+  const lType = typeof l, rType = typeof r;
+  switch(lType) {
+    case 'undefined': return -2;
+    case 'number':
+      log('Compare',l,r);
+      switch(rType) {
+        case 'undefined': return 2;
+        case 'number': return l===r?0:l>r?3:-3;
+        default: return rightOrder([l],r);   
+      }
+    default:
+      switch(rType) {
+        case 'undefined': return 5;
+        case 'number': return rightOrder(l,[r])
+        default:
+          if (l.length === 0 && r.length === 0)
+            return 0;
+          let res = rightOrder(l[0],r[0]);
+          if(res !== 0) return res<<1;
+          else return rightOrder(l.slice(1),r.slice(1));
+      }
+  }
 }
 
 function startSolver({options}) {
