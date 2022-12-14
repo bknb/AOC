@@ -1,6 +1,7 @@
 const colors = require('colors');
 const fs = require('fs');
 const {solveOptions} = require('../../../questions.js');
+const {create2DimArray} = require('../../../santasLittleHelper.js');
 
 colors.setTheme({
   test: ['italic','bold'],
@@ -25,30 +26,24 @@ function solve2() {
 }
 
 function solve(nextPath) {
-    log(`Start: ${S}, End: ${E}`);
-  minMap = Array.from(Array(input.length))
-    .map(()=>Array.from(Array(input[0].length)).fill(Number.MAX_VALUE));
+  log(`Start: ${S}, End: ${E}`);
+  let min, steps = 0, 
+    xm = input.length, ym = input[0].length;
+  minMap = create2DimArray(xm,ym,Number.MAX_VALUE);
   pos = [[[...S,heu(S[0],S[1],input[S[0]][S[1]]),'S',0],[]]];
-  let min;
-  let steps = 0;
   while(pos.length) {
     steps++;
     //log(pos.slice(0,3).map(([n,p])=>n[2]+n[3]+p.length),min && min.length);
     const [next,path] = pos.shift();
     const [x,y,s,d,h] = next;
-    if (path.length && h!==path[path.length-1][4])
-      log(`(${x}|${y})`.green+s+d+h+':'+path.length);
+    log(`(${x}|${y})`.green+`${d}`.red+`[${s}:${path.length}]`.cyan+`^${h}`);
     if (s) {
       let e = input[x][y];
       let n = nextPath(path,next,h);
       for(let i=4;i-->0;) {
         const m = i>>1?1:-1;
         const [nx,ny] = i%2?[x,y+m]:[x+m,y];
-        if (nx>=0 && nx<input.length
-          && ny>=0 && ny<input[nx].length
-          && input[nx][ny]-e<=1
-          && minMap[nx][ny]>n.length
-          && !(min && path.length+heu(nx,ny) >= min.length))
+        if (isPotentialNext(nx,ny,e,n,path))
           insert(nx,ny,dir[i%2][i>>1],n);
       }
     }
@@ -56,24 +51,30 @@ function solve(nextPath) {
   }
   log(`Steps: ${steps}`)
   return min?.length;
-}
 
-function insert(x,y,s,n) {
-  const e = [[x,y,heu(x,y,n.length-1),s,input[x][y]],n];
-  let low=0;
-  let high=pos.length;
-  while (low < high) {
-    const mid = (low + high) >>> 1;
-    if (pos[mid][0][2] < e[0][2]) low = mid + 1;
-    else high = mid;
+  function isPotentialNext(nx,ny,e,n,path) {
+    return nx>=0 && nx<xm
+      && ny>=0 && ny<ym
+      && input[nx][ny]-e<=1
+      && minMap[nx][ny]>n.length
+      && !(min && path.length+heu(nx,ny) >= min.length)
   }
-  minMap[x][y]=n.length;
-  pos.splice(low,0,e);
-}
-
-function heu(x,y) {
-  return Math.max(Math.abs(input[E[0]][E[1]]-input[x][y]),
-                  Math.abs(E[0]-x)+Math.abs(E[1]-y));
+  function insert(x,y,s,n) {
+    const e = [[x,y,heu(x,y,n.length-1),s,input[x][y]],n];
+    let low=0;
+    let high=pos.length;
+    while (low < high) {
+      const mid = (low + high) >>> 1;
+      if (pos[mid][0][2] < e[0][2]) low = mid + 1;
+      else high = mid;
+    }
+    minMap[x][y]=n.length;
+    pos.splice(low,0,e);
+  }
+  function heu(x,y) {
+    return Math.max(Math.abs(input[E[0]][E[1]]-input[x][y]),
+                    Math.abs(E[0]-x)+Math.abs(E[1]-y));
+  }
 }
 
 function prepareInput(data) {

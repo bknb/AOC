@@ -19,18 +19,18 @@ function solve1() {
   let ni, nj;
   log(`Initial state:`.blue);
   print();
-  while(moved && total < 1) {
+  while(moved) {
     moved = false;
     let map = input.map(r=>[...r]);
     for(let k=2;k-->0;) {
       for(let i=0;i<input.length;i++)
         for(let j=0;j<input[i].length;j++) {
+          let ni = i;nj = j;
           if (input[i][j] === k) {
             if(k) nj = (j+1)%input[i].length;
             else ni = (i+1)%input.length;
-            ni ??= i;nj ??= j;
             if (input[ni][nj]===-1) {
-              log(i,j,'>',ni,nj,':',cs[k]);
+              //log(i,j,'>',ni,nj,':',cs[k]);
               map[i][j] = -1;
               map[ni][nj] = k;
               moved = true;
@@ -39,7 +39,7 @@ function solve1() {
         }
       input = map.map(r=>[...r]);
     }
-    total += moved;
+    total++;
     if (total<=5 || total%10===0 || total>=55) {
       log(`\nAfter ${total} steps:`.blue);
       print();

@@ -1,6 +1,7 @@
 const colors = require('colors');
 const fs = require('fs');
 const {solveOptions} = require('../../../questions.js');
+const helper = require('../../../santasLittleHelper.js');
 
 colors.setTheme({
   test: ['italic','bold'],
@@ -21,8 +22,8 @@ function solve2() {
   return null;
 }
 
-function prepareData(data) {
-  return data;
+function init(data) {
+  input = data;
 }
 
 function startSolver({options}) {
@@ -43,7 +44,7 @@ function handleInput(options) {
       return;
     }
     debug = options.includes("Debug");
-    input = prepareData(data);
+    init(data);
   
     if (options.includes("Part 1")) { 
       console.log('-------'+'\nPart 1:'.main+'\n-------');
