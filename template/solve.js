@@ -1,7 +1,7 @@
 const colors = require('colors');
 const fs = require('fs');
 const {solveOptions} = require('../../../questions.js');
-const helper = require('../../../santasLittleHelper.js');
+const {...helper} = require('../../../santasLittleHelper.js');
 
 colors.setTheme({
   test: ['italic','bold'],
@@ -48,12 +48,12 @@ function handleInput(options) {
   
     if (options.includes("Part 1")) { 
       console.log('-------'+'\nPart 1:'.main+'\n-------');
-      console.log(solve1());
+      console.log('Solution:'.red.bold+solve1());
       console.log('');
     }
     if (options.includes("Part 2")) { 
       console.log('-------'+'\nPart 2:'.main+'\n-------');
-      console.log(solve2());
+      console.log('Solution:'.red.bold+solve2());
       console.log('');
     }
   }
@@ -61,4 +61,5 @@ function handleInput(options) {
 
 function log(...text) {
   if(debug) console.log(...text);
+  return text[0];
 }
