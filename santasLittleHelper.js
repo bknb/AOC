@@ -27,7 +27,18 @@ function inBounds(x,[min,max]) {
 }
 
 function create2DimArray(x,y,f) {
-  return Array.from(Array(x)).map(()=>Array.from(Array(y)).fill(f));
+  return [...Array(x)].map(()=>[...Array(y)].fill(f));
+}
+
+function arr(n) {
+  return [...Array(n)];
+}
+
+function multi(x,f) {
+  if(!Array.isArray(x)) return arr(n).fill(f);
+  let result = arr(x[0]);
+  for(let i=1;i<x.length;i++)
+    result.at
 }
 
 function printMap(m,s,b) {
