@@ -44,16 +44,22 @@ function handleInput(options) {
       return;
     }
     debug = options.includes("Debug");
+    const prepStart = performance.now();
     init(data);
-  
+    console.log(`prepared in ${(performance.now()-prepStart).toFixed(2)}ms\n`.yellow);
+
     if (options.includes("Part 1")) { 
       console.log('-------'+'\nPart 1:'.main+'\n-------');
-      console.log('Solution:'.red.bold+solve1());
+      const start = performance.now();
+      console.log('Solution: '.red.bold+solve1());
+      console.log(`in ${(performance.now()-start).toFixed(2)}ms`.magenta);
       console.log('');
     }
     if (options.includes("Part 2")) { 
       console.log('-------'+'\nPart 2:'.main+'\n-------');
-      console.log('Solution:'.red.bold+solve2());
+      const start = performance.now();
+      console.log('Solution: '.red.bold+solve2());
+      console.log(`in ${(performance.now()-start).toFixed(2)}ms`.magenta);
       console.log('');
     }
   }

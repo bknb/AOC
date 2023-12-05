@@ -60,7 +60,7 @@ function arr2obj(a) {
   return o;
 }
 
-function range(n,m) {
+function rng(n,m) {
   return [...Array(m-n)].map((x,i)=>i+n);
 }
 
@@ -76,6 +76,6 @@ module.exports = {
   printMap,
   frameIt,
   arr2obj,
-  rng: range,
+  rng,
   d1
 }
