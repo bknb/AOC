@@ -30,17 +30,6 @@ function create2DimArray(x,y,f) {
   return [...Array(x)].map(()=>[...Array(y)].fill(f));
 }
 
-function arr(n) {
-  return [...Array(n)];
-}
-
-function multi(x,f) {
-  if(!Array.isArray(x)) return arr(n).fill(f);
-  let result = arr(x[0]);
-  for(let i=1;i<x.length;i++)
-    result.at
-}
-
 function printMap(m,s,b) {
   if (b) m = m.map(r=>r.slice(b[0][1],b[1][1])).slice(b[0][0],b[1][0]);
   return m.map((r,x)=>r

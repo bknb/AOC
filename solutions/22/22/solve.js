@@ -10,7 +10,20 @@ colors.setTheme({
   high2: ['red']
 });
 
-const signs = [' ','.','#']
+const signs = [' ','.','#'];
+const cw = test?4:50;
+const transTest = [[[5,2],[3,1],[2,1],[1,1]],
+                   [[2,0],[4,3],[5,3],[0,1]],
+                   [[3,0],[4,0],[1,2],[0,0]],
+                   [[5,1],[4,1],[2,2],[0,3]],
+                   [[5,0],[0,1],[2,3],[3,3]],
+                   [[0,2],[1,0],[4,2],[3,2]]];
+const transProd = [[[1,0],[2,1],[3,0],[5,0]],
+                   [[4,2],[2,2],[0,2],[5,3]],
+                   [[1,3],[4,1],[3,1],[0,3]],
+                   [[3,0],[5,1],[0,0],[2,0]],
+                   [[1,2],[5,2],[3,2],[2,3]],
+                   [[4,3],[1,0],[0,3],[3,3]]];
 
 let debug, test, map, ops, m, t;
 
@@ -48,7 +61,7 @@ function solve1() {
 }
 
 function solve2() {
-  const cw = test?4:50;
+  const trans = test?transTest:transProd;
   log(printMap(map,signs),m,t);
   let f = 0;
   let x = 0;
