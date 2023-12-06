@@ -22,7 +22,7 @@ function solve1() {
     .reduce((a,b)=>a+b,0);
 }
 
-function solve2() {gemoje
+function solve2() {
   const decks = new Array(input.length).fill(1);
   input.map(([win,set])=>
     set.filter(x=>win.includes(x)).length)

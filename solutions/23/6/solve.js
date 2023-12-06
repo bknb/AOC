@@ -1,6 +1,5 @@
 const colors = require('colors');
 const fs = require('fs');
-const md5 = require('js-md5');
 const {solveOptions} = require('../../../questions.js');
 const {...helper} = require('../../../santasLittleHelper.js');
 
@@ -16,29 +15,25 @@ let debug, test, input;
 solveOptions().then(startSolver);
   
 function solve1() {
-  return input.map(x=>findSmallestNumber5(log(x)));
+  return input.map(waysToWin).reduce((a,b)=>a*b,1);
 }
 
 function solve2() {
-  return input.map(x=>findSmallestNumber6(log(x)));
+  const newInput = input.reduce(([t1,d1],[t2,d2])=>[t1+t2,d1+d2],['','']).map(x=>+x);
+  return waysToWin(newInput);
+}
+
+function waysToWin([t,d]) {
+  let wins = 0;
+  for (let i = t; i-->1;)
+    if((t-i)*i>d)
+      wins++;
+  return wins;
 }
 
 function init(data) {
-  input = data.split('\n');
-}
-
-function findSmallestNumber5(start) {
-  let i=0;
-  while(true)
-    if(/^0{5}.*$/.test(md5(log(`${start}${i++}`))))
-      return i-1;
-}
-
-function findSmallestNumber6(start) {
-  let i=0;
-  while(true)
-    if(/^0{6}.*$/.test(md5(log(`${start}${i++}`))))
-      return i-1;
+  const [t,d] = data.split('\n').map(row=>row.match(/\d+/g));
+  input = t.map((x,i)=>[x,d[i]]);
 }
 
 function startSolver({options}) {

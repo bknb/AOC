@@ -23,18 +23,34 @@ function solve1() {
 }
 
 function solve2() {
-  let seeds = [];
-  input[0].forEach((value,i)=>
-    i&1 ? seeds[seeds.length-1].push(seeds[seeds.length-1][0]+value-1) 
-    : seeds.push([value]));
+  const seeds = input[0].reduce((acc, value, i)=>
+    i&1 ? acc[0].push(acc[0][0]+value-1) && acc
+    : [[value]].concat(acc), []);
   const steps = input.slice(1)
-    .map(step=>step.map(([d,s,l])=>[[s,s+l-1],d-s]));
-  steps.forEach(set=>set.sort(([a],[b])=>a[1]-b[1]));
-  log(seeds,...steps);
-  steps.forEach(set=>
-    seeds=log(seeds.map(range=>step2(range,set))
-    .reduce((a,b)=>a.concat(b),[])));
-  return Math.min(...seeds.map(x=>x[0]));
+    .map(step=>step.map(([d,s,l])=>[[s,s+l-1],d-s]))
+    .map(set=>set.sort(([[,a]],[[,b]])=>a-b));
+  log(seeds,steps);
+  return Math.min(...steps.reduce((ranges, set)=>
+    ranges.map(range=>project(range,set))
+    .reduce((a,b)=>a.concat(b),[]),seeds).map(x=>x[0]));
+}
+
+function project(range, [next,...rest]) {
+  if (!next) return [range];
+  const [start, end] = range
+  const [[from,to],shift] = next;
+  if (start>=from)
+    if (end<=to) 
+      return [[start,end].map(x=>x+shift)];
+    else if (start<=to)
+      return [[start,to].map(x=>x+shift)]
+        .concat(project([to+1,end],rest));
+    else
+      return project([start,end],rest);
+  else if (end>=from)
+    return [[start,from-1]]
+      .concat(project([from,end],rest));
+  return [range];
 }
 
 function step(number, set) {
@@ -42,29 +58,6 @@ function step(number, set) {
     if (number >= set[i][1] && number < set[i][1]+set[i][2])
       return set[i][0] + number - set[i][1];
   return number;
-}
-
-function step2([start, end], [current,...rest]) {
-  if (current) {
-    const [[from,to],shift] = current;
-    if (start>=from)
-      if (end<=to)
-        return [[start,end].map(x=>x+shift)];
-      else 
-        if (start<=to)
-          return [[start,to].map(x=>x+shift)]
-                  .concat(step2([to+1,end],rest));
-        else
-          return step2([start,end],rest);
-    else if (end>=from)
-      return [[start,from-1]]
-        .concat(step2([from,end],rest));
-  }
-        
-  return [[start,end]];
-}
-
-function merge(set1,set2) {
 }
 
 function init(data) {
