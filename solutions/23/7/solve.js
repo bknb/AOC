@@ -49,11 +49,7 @@ function calculateWin(sortedHands) {
 }
 
 function compareHands([counts1,,hand1],[counts2,,hand2]) {
-  return typeCompare(counts1,counts2) || valueCompare(hand1,hand2);
-}
-
-function valueCompare(hand1,hand2) {
-  return compare(hand1,hand2);
+  return typeCompare(counts1,counts2) || compare(hand1,hand2);
 }
 
 function typeCompare(counts1,counts2) {
