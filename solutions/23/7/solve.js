@@ -18,73 +18,51 @@ const cards2 = ['J','2','3','4','5','6','7','8','9','10','T','Q','K','A'];
 solveOptions().then(startSolver);
   
 function solve1() {
-  log(input)
-  const inp = log(input.map(([hand,bid])=>[cards.map(
-    card=>[card,hand.filter(x=>x===card).length])
-      .filter(([,count])=>count>0)
-      .map(([card,count])=>[cards.indexOf(card),count])
-      .sort(rankCards),bid,hand.map(x=>cards.indexOf(x))]))
-    .sort(rank2);
-  log(inp.map(([,,a])=>a.map(a=>cards[a]).join('')));
-  return inp.reduce((a,[,bid],i)=>log(a+bid*(i+1),bid,i),0);
+  return calculateWin(preparedInput(cards).sort(compareHands));
 }
 
 function solve2() {
-  const inp = input.map(([hand,bid])=>[cards2.map(
-    card=>[card,hand.filter(x=>x===card).length])
-      .filter(([,count])=>count>0)
-      .map(([card,count])=>[cards2.indexOf(card),count])
-      .sort(rankCards),bid,hand.map(x=>cards2.indexOf(x))])
-    .map(joker)
-    .sort(rank2);
-  log(inp.map(([a])=>a.map(([a,b])=>[cards2[a],b])));
-  log(inp.map(([,,a])=>a.map(a=>cards2[a]).join('')));
-  return inp.reduce((a,[,bid],i)=>log(a+bid*(i+1),bid,i),0);
+  return calculateWin(preparedInput(cards2).map(jokerfy).sort(compareHands));
 }
 
-function joker([s,b,a]) {
-  log('before',s)
-  const index = s.findIndex(([ca])=>ca===0);
-  if (index !== -1) {
-    const count = s[index][1];
-    if (count != 5) {
-      s.splice(index,1);
-      s[0][1]+=count;
+function jokerfy([counts,...rest]) {
+  if (counts.length>1) {
+    const index = counts.findIndex(([card])=>card===0);
+    if (index !== -1) {
+      const count = counts.splice(index,1)[0][1];
+      counts[0][1]+=count;
     }
   }
-  log('after',s)
-  return [s,b,a];
+  return [counts,...rest];
 }
 
-function rankCards([ca1,co1],[ca2,co2]) {
-  if (co1 < co2) return 1;
-  if (co1 > co2) return -1;
-  if (ca1 < ca2) return 1;
-  return -1;
+function preparedInput(values) {
+  return input.map(([hand,bid])=>[values.map(
+    card=>[card,hand.filter(x=>x===card).length])
+      .filter(([,count])=>count>0)
+      .map(([card,count])=>[values.indexOf(card),count])
+      .sort(([,a],[,b])=>b-a),bid,hand.map(x=>values.indexOf(x))]);
 }
-function rank2(a,b) {
-  const simple = simpleRank(a[0],b[0]);
-  if (simple) return simple;
-  for (let i=0;i<a[2].length;i++) 
-    if (a[2][i]>b[2][i]) return 1;
-    else if (a[2][i]<b[2][i]) return -1;
+
+function calculateWin(sortedHands) {
+  return sortedHands.reduce((accu,[,bid],rank)=>accu+bid*(rank+1),0);
+}
+
+function compareHands([counts1,,hand1],[counts2,,hand2]) {
+  return typeCompare(counts1,counts2) || valueCompare(hand1,hand2);
+}
+
+function valueCompare(hand1,hand2) {
+  for (let i=0;i<hand1.length;i++) 
+    if (hand1[i]>hand2[i]) return 1;
+    else if (hand1[i]<hand2[i]) return -1;
   return 0;
 }
 
-function rank([a],[b]) {
-  const simple = simpleRank(a,b);
-  if (simple) return simple;
-  for (let i=0;i<a.length;i++) 
-    if (a[i][0]>b[i][0]) return 1;
-    else if (a[i][0]<b[i][0]) return -1;
-  return 0;
-}
-
-function simpleRank(a,b) {
-  log('simpleRank',a,b)
-  for (let i=0;i<a.length;i++) 
-    if (a[i][1]>b[i][1]) return 1;
-    else if (a[i][1]<b[i][1]) return -1;
+function typeCompare(counts1,counts2) {
+  for (let i=0;i<counts1.length;i++) 
+    if (counts1[i][1]>counts2[i][1]) return 1;
+    else if (counts1[i][1]<counts2[i][1]) return -1;
   return 0;
 }
 
