@@ -15,7 +15,7 @@ let debug, test, input;
 solveOptions().then(startSolver);
   
 function solve1() {
-  return input.map(waysToWin).reduce((a,b)=>a*b,1);
+  return log(input.map(waysToWin)).reduce((a,b)=>a*b,1);
 }
 
 function solve2() {
@@ -24,11 +24,11 @@ function solve2() {
 }
 
 function waysToWin([t,d]) {
-  let wins = 0;
-  for (let i = t; i-->1;)
-    if((t-i)*i>d)
-      wins++;
-  return wins;
+  const half = t/2;
+  const dis = Math.sqrt(half*half-d);
+  return Math.floor(half+dis)
+    -Math.ceil(half-dis)
+    +(Number.isInteger(half+dis)?-1:1);
 }
 
 function init(data) {
