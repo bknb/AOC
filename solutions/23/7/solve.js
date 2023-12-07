@@ -53,16 +53,17 @@ function compareHands([counts1,,hand1],[counts2,,hand2]) {
 }
 
 function valueCompare(hand1,hand2) {
-  for (let i=0;i<hand1.length;i++) 
-    if (hand1[i]>hand2[i]) return 1;
-    else if (hand1[i]<hand2[i]) return -1;
-  return 0;
+  return compare(hand1,hand2);
 }
 
 function typeCompare(counts1,counts2) {
-  for (let i=0;i<counts1.length;i++) 
-    if (counts1[i][1]>counts2[i][1]) return 1;
-    else if (counts1[i][1]<counts2[i][1]) return -1;
+  return compare(...[counts1,counts2].map(x=>x.map(y=>y[1])));
+}
+
+function compare(l1,l2) {
+  for (let i=0;i<l1.length;i++) 
+    if (l1[i]!==l2[i]) 
+      return l1[i]-l2[i];
   return 0;
 }
 
