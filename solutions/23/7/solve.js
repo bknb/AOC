@@ -57,7 +57,7 @@ function valueCompare(hand1,hand2) {
 }
 
 function typeCompare(counts1,counts2) {
-  return compare(...[counts1,counts2].map(x=>x.map(y=>y[1])));
+  return compare(...[counts1,counts2].map(x=>x.map(([,y])=>y)));
 }
 
 function compare(l1,l2) {
