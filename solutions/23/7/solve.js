@@ -12,11 +12,11 @@ colors.setTheme({
 
 let debug, test, input;
 
+solveOptions().then(startSolver);
+
 const cards = ['2','3','4','5','6','7','8','9','10','T','J','Q','K','A'];
 const cards2 = ['J','2','3','4','5','6','7','8','9','10','T','Q','K','A'];
 
-solveOptions().then(startSolver);
-  
 function solve1() {
   return calculateWin(preparedInput(cards).sort(compareHands));
 }
