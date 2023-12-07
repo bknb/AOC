@@ -46,7 +46,8 @@ function handleInput(options) {
     debug = options.includes("Debug");
     const prepStart = performance.now();
     init(data);
-    console.log(`prepared in ${(performance.now()-prepStart).toFixed(2)}ms\n`.yellow);
+    const prepTime = performance.now()-prepStart;
+    console.log(`prepared in ${prepTime.toFixed(2)}ms\n`.yellow);
 
     if (options.includes("Part 1")) { 
       console.log('-------'+'\nPart 1:'.main+'\n-------');
