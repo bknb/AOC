@@ -45,6 +45,7 @@ function init(data) {
   ways.forEach((way,i)=>trans[way[0]]=i)
 
   ways = ways.map(([,r,l])=>[trans[r],trans[l]]);
+  log(ins,ways,trans);
 }
 
 function startSolver({options}) {

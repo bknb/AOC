@@ -1,5 +1,10 @@
-LLR
+LR
 
-AAA = (BBB, BBB)
-BBB = (AAA, ZZZ)
-ZZZ = (ZZZ, ZZZ)
+AAA = (ZZZ, XXX)
+22A = (11B, XXX)
+ZZZ = (XXX, 11C)
+11B = (XXX, 22Z)
+11C = (11D, XXX)
+22Z = (11D, XXX)
+11D = (XXX, AAA)
+XXX = (XXX, XXX)
