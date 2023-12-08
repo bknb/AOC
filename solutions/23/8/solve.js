@@ -29,10 +29,8 @@ function solve2() {
   return starts.map(x=>getStepsToGoal(x,ends)).reduce((a,b)=>lcm(a,b));
 }
 
-function getStepsToGoal(start,ends) {
+function getStepsToGoal(current,ends) {
   let step = 0;
-  let current = start;
-  log(ways);
   while(!ends.includes(current))
     current = log(ways[current][ins[step++%ins.length]])
   return step;
