@@ -68,6 +68,10 @@ function d1([x1,y1],[x2,y2]) {
   return Math.abs(x1-x2)+Math.abs(y1-y2);
 }
 
+function sum() {
+  return [...arguments].reduce((a,c)=>a+c,0);
+}
+
 module.exports = {
   getBounds,
   fillWithinBounds,
@@ -77,5 +81,6 @@ module.exports = {
   frameIt,
   arr2obj,
   rng,
+  sum,
   d1
 }

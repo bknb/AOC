@@ -31,8 +31,9 @@ function solve2() {
 
 function init(data) {
   input = data.split('\n').map(row=>
-    row.replace(/Game \d+:/g, '').split(';').map(set=>
-      set.trim().split(',').map(pull=>pull.trim().split(' '))));
+    row.split(':')[1].split(';').map(set=>
+      set.trim().split(',').map(draw=>
+        draw.trim().split(' '))));
 }
 
 function getPower(game) {
