@@ -13,18 +13,15 @@ let debug, test, input;
 
 solveOptions().then(startSolver);
   
-function solve1() {
+function solve1(input) {
+  const getNext = row =>
+    row.every(x=>x===0) ? 0 : row[row.length-1] +
+    getNext(row.slice(1).reduce((a,b,i)=>a.concat(b-row[i]),[]));
   return input.map(getNext).reduce((a,b)=>a+b);
-  function getNext(row) {
-    return row.every(x=>x===0) ? 0
-      : row[row.length-1] +
-      getNext(row.slice(1).reduce((a,b,i)=>a.concat(b-row[i]),[]));
-  }
 }
 
-function solve2() {
-  input = input.map(x=>x.reverse());
-  return solve1();
+function solve2(input) {
+  return solve1(input.map(x=>x.reverse()));
 }
 
 function init(data) {
@@ -58,14 +55,14 @@ function handleInput(options) {
     if (options.includes("Part 1")) { 
       console.log('-------'+'\nPart 1:'.main+'\n-------');
       const start = performance.now();
-      console.log('Solution: '.red.bold+solve1());
+      console.log('Solution: '.red.bold+solve1(input));
       console.log(`in ${(performance.now()-start).toFixed(2)}ms`.magenta);
       console.log('');
     }
     if (options.includes("Part 2")) { 
       console.log('-------'+'\nPart 2:'.main+'\n-------');
       const start = performance.now();
-      console.log('Solution: '.red.bold+solve2());
+      console.log('Solution: '.red.bold+solve2(input));
       console.log(`in ${(performance.now()-start).toFixed(2)}ms`.magenta);
       console.log('');
     }

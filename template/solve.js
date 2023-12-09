@@ -14,11 +14,11 @@ let debug, test, input;
 
 solveOptions().then(startSolver);
   
-function solve1() {
+function solve1(input) {
   return null;
 }
 
-function solve2() {
+function solve2(input) {
   return null;
 }
 
@@ -53,14 +53,14 @@ function handleInput(options) {
     if (options.includes("Part 1")) { 
       console.log('-------'+'\nPart 1:'.main+'\n-------');
       const start = performance.now();
-      console.log('Solution: '.red.bold+solve1());
+      console.log('Solution: '.red.bold+solve1(input));
       console.log(`in ${(performance.now()-start).toFixed(2)}ms`.magenta);
       console.log('');
     }
     if (options.includes("Part 2")) { 
       console.log('-------'+'\nPart 2:'.main+'\n-------');
       const start = performance.now();
-      console.log('Solution: '.red.bold+solve2());
+      console.log('Solution: '.red.bold+solve2(input));
       console.log(`in ${(performance.now()-start).toFixed(2)}ms`.magenta);
       console.log('');
     }
