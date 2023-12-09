@@ -1,7 +1,6 @@
 const colors = require('colors');
 const fs = require('fs');
 const {solveOptions} = require('../../../questions.js');
-const {...helper} = require('../../../santasLittleHelper.js');
 
 colors.setTheme({
   test: ['italic','bold'],
@@ -15,15 +14,21 @@ let debug, test, input;
 solveOptions().then(startSolver);
   
 function solve1() {
-  return null;
+  return input.map(getNext).reduce((a,b)=>a+b);
+  function getNext(row) {
+    return row.every(x=>x===0) ? 0
+      : row[row.length-1] +
+      getNext(row.slice(1).reduce((a,b,i)=>a.concat(b-row[i]),[]));
+  }
 }
 
 function solve2() {
-  return null;
+  input = input.map(x=>x.reverse());
+  return solve1();
 }
 
 function init(data) {
-  input = data;
+  input = data.split('\n').map(x=>x.match(/-?\d+/g).map(d=>+d));
 }
 
 function startSolver({options}) {
