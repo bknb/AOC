@@ -28,6 +28,10 @@ function init(data) {
   input = data.split('\n').map(x=>x.match(/-?\d+/g).map(d=>+d));
 }
 
+function solve(input, part) {
+  return part === 1 ? solve1(input) : solve2(input);
+}
+
 function startSolver({options}) {
   console.log('');
   test = options.includes('Test');
@@ -41,10 +45,8 @@ function startSolver({options}) {
 
 function handleInput(options) {
   return (err, data) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
+    if (err) return console.error(err);
+    
     debug = options.includes("Debug");
     const prepStart = performance.now();
     init(data);
@@ -52,20 +54,13 @@ function handleInput(options) {
     log('Input:'.blue, input);
     console.log(`prepared in ${prepTime.toFixed(2)}ms\n`.yellow);
 
-    if (options.includes("Part 1")) { 
-      console.log('-------'+'\nPart 1:'.main+'\n-------');
-      const start = performance.now();
-      console.log('Solution: '.red.bold+solve1(input));
-      console.log(`in ${(performance.now()-start).toFixed(2)}ms`.magenta);
-      console.log('');
-    }
-    if (options.includes("Part 2")) { 
-      console.log('-------'+'\nPart 2:'.main+'\n-------');
-      const start = performance.now();
-      console.log('Solution: '.red.bold+solve2(input));
-      console.log(`in ${(performance.now()-start).toFixed(2)}ms`.magenta);
-      console.log('');
-    }
+    [1,2].filter(part=>options.includes(`Part ${part}`))
+      .forEach(part => {
+        console.log(`-------\n${`Part ${part}:`.main}\n-------`);
+        const start = performance.now();
+        console.log('Solution: '.red.bold+solve(input,part));
+        console.log(`in ${(performance.now()-start).toFixed(2)}ms\n`.magenta);
+      });
   }
 }
 
