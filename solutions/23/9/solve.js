@@ -15,7 +15,7 @@ solveOptions().then(startSolver);
   
 function solve1(input) {
   const getNext = row =>
-    row.every(x=>x===0) ? 0 : row[row.length-1] +
+    row.every(x=>!x) ? 0 : row[row.length-1] +
     getNext(row.slice(1).reduce((a,b,i)=>a.concat(b-row[i]),[]));
   return input.map(getNext).reduce((a,b)=>a+b);
 }
