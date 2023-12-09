@@ -1,7 +1,7 @@
 const colors = require('colors');
 const fs = require('fs');
 const {solveOptions} = require('../../../questions.js');
-const {...helper} = require('../../../santasLittleHelper.js');
+const {init, solve1, solve2} = require('./solution.js');
 
 colors.setTheme({
   test: ['italic','bold'],
@@ -13,18 +13,6 @@ colors.setTheme({
 let debug, test, input;
 
 solveOptions().then(startSolver);
-  
-function solve1(input) {
-  return null;
-}
-
-function solve2(input) {
-  return null;
-}
-
-function init(data) {
-  return data;
-}
 
 function startSolver({options}) {
   console.log('');
@@ -32,13 +20,13 @@ function startSolver({options}) {
   if (test) {
     console.log("~~TestRun~~".test);
   }
-  const path = require('path')
+  const filePath = require('path')
     .resolve(__dirname, (test ? 'test' : 'input') + '.txt');
-  fs.readFile(path, 'utf8', handleInput(options));
+  fs.readFile(filePath, 'utf8', handleInput(options));
 }
 
-function solve(input, part) {
-  return part === 1 ? solve1(input) : solve2(input);
+function solve(part, ...rest) {
+  return part === 1 ? solve1(...rest) : solve2(...rest);
 }
 
 function handleInput(options) {
@@ -47,7 +35,7 @@ function handleInput(options) {
 
     debug = options.includes("Debug");
     const prepStart = performance.now();
-    init(data);
+    input = init(data,log);
     const prepTime = performance.now()-prepStart;
     log('Input:'.blue, input);
     console.log(`prepared in ${prepTime.toFixed(2)}ms\n`.yellow);
@@ -56,7 +44,7 @@ function handleInput(options) {
       .forEach(part => {
         console.log(`-------\n${`Part ${part}:`.main}\n-------`);
         const start = performance.now();
-        console.log('Solution: '.red.bold+solve(input,part));
+        console.log('Solution: '.red.bold+solve(part,input,log));
         console.log(`in ${(performance.now()-start).toFixed(2)}ms\n`.magenta);
       });
   }
