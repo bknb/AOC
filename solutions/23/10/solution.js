@@ -1,6 +1,6 @@
-const {...helper} = require('../../../santasLittleHelper.js');
+const {frameIt, printMap} = require('../../../santasLittleHelper.js');
 
-let input, log;
+let input, log, start;
 
 const tiles = {
   '.': [],
@@ -16,25 +16,51 @@ const tiles = {
 function solve1(inp,l) {
   input = inp, log = l;
 
-  const start = findStart();
-  let [[p1,[x1,y1]],[p2,[x2,y2]]] = get2Tiles(start); 
-  let d = 1;
+  return Math.floor(getLoop().length/2);
+}
+
+function solve2(inp,l) {
+  input = inp, log = l;
+
+  const loop = getLoop();
+
+  const cages = input
+    .map((row,y)=>
+      row.map((c,x)=>
+        !loop.some(([lx,ly])=>lx===x&&ly===y)
+        && loop.filter(([lx,ly])=>lx===x&&ly>y)
+        .map(([lx,ly])=>input[ly][lx]))
+      .filter(c=>c&&isInLoop(c)).length)
+    .reduce((a,b)=>a+b,0);
+
+  return cages;
+}
+
+function isInLoop(loopParts) {
+  const lr = [0,0];
+  for(let i=loopParts.length; i-->0;)
+    for(let j=loopParts[i].length; j-->0;)
+      if(loopParts[i][j][0]>0) lr[1]++;
+      else if(loopParts[i][j][0]<0) lr[0]++;
+
+  return Math.min(...lr)%2===1;
+}
+
+function getLoop() {
+  start = start || findStart();
+  const loop = [start];
+  let [[p1,[x1,y1]],[p2,[x2,y2]]] = get2Tiles(loop[0]);
 
   while(x1!=x2||y1!=y2) {
-    log(d,x1,y1,x2,y2);
-    d++;
+    loop.push([x1,y1]);
+    loop.unshift([x2,y2]);
     let [nx1,ny1] = getNext(x1,y1,p1);
     let [nx2,ny2] = getNext(x2,y2,p2);
     p1 = [x1,y1], p2 = [x2,y2];
     x1 = nx1, y1 = ny1, x2 = nx2, y2 = ny2;
   }
-
-  return d;
-}
-
-function solve2(inp,l) {
-  input = inp, log = l;
-  return null;
+  loop.push([x1,y1]);
+  return loop;
 }
 
 function findStart() {
@@ -46,19 +72,13 @@ function findStart() {
 }
 
 function get2Tiles(s) {
-  return getNeighbors(s)
+  const neighbors = getNeighbors(s)
     .filter(([x,y])=>x>=0&&y>=0)
     .filter(n=>getNeighbors(n)
-      .some(([x,y])=>x===s[0]&&y===s[1]))
-    .map(([x,y])=>[s,[x,y]])
-}
-
-function walk([[p1,[x1,y1]],[p2,[x2,y2]]]) {
-  if (x1===x2&&y1===y2) return 1;
-  log(p1,p2);
-  return 1 + walk([
-    [[x1,y1],getNext(x1,y1,p1)],
-    [[x2,y2],getNext(x2,y2,p2)]])
+      .some(([x,y])=>x===s[0]&&y===s[1]));
+  input[s[1]][s[0]] = neighbors.map(([x,y])=>[x-s[0],y-s[1]]);
+  return neighbors
+    .map(([x,y])=>[s,[x,y]]);
 }
 
 function getNext(x,y,[px,py]) {
@@ -70,7 +90,7 @@ function getNeighbors([x,y]) {
   return input[y][x].map(([dx,dy])=>[x+dx,y+dy]);
 }
 
-function init(data,log) {
+function init(data) {
   return data.split('\n').map(row=>row.split('').map(c=>tiles[c]));
 }
 
