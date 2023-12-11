@@ -54,8 +54,8 @@ function getLoop() {
   while(x1!=x2||y1!=y2) {
     loop.push([x1,y1]);
     loop.unshift([x2,y2]);
-    let [nx1,ny1] = getNext(x1,y1,p1);
-    let [nx2,ny2] = getNext(x2,y2,p2);
+    let [nx1,ny1] = getNext(p1,x1,y1);
+    let [nx2,ny2] = getNext(p2,x2,y2);
     p1 = [x1,y1], p2 = [x2,y2];
     x1 = nx1, y1 = ny1, x2 = nx2, y2 = ny2;
   }
@@ -64,11 +64,10 @@ function getLoop() {
 }
 
 function findStart() {
-  let x0,y0;
-  for (y0=input.length;y0-->0;)
-    for(x0=input[y0].length;x0-->0;)
-      if (input[y0][x0].length===4)
-        return [x0,y0];
+  for (let y=input.length;y-->0;)
+    for(let x=input[y].length;x-->0;)
+      if (input[y][x].length===4)
+        return [x,y];
 }
 
 function get2Tiles(s) {
@@ -76,12 +75,13 @@ function get2Tiles(s) {
     .filter(([x,y])=>x>=0&&y>=0)
     .filter(n=>getNeighbors(n)
       .some(([x,y])=>x===s[0]&&y===s[1]));
+  
   input[s[1]][s[0]] = neighbors.map(([x,y])=>[x-s[0],y-s[1]]);
-  return neighbors
-    .map(([x,y])=>[s,[x,y]]);
+  
+  return neighbors.map(([x,y])=>[s,[x,y]]);
 }
 
-function getNext(x,y,[px,py]) {
+function getNext([px,py],x,y) {
   return getNeighbors([x,y])
     .filter(([nx,ny])=>nx!=px||ny!=py)[0];
 }
