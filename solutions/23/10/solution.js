@@ -22,68 +22,70 @@ function solve2(inp, l) {
 
   const loop = getLoop();
 
-  const cages = input
+  return input
     .map((row, y) =>
-      row.map((c, x) =>
-        !loop.some(([lx, ly]) => lx === x && ly === y)
-        && loop.filter(([lx, ly]) => lx === x && ly > y)
-          .map(([lx, ly]) => input[ly][lx]))
-        .filter(c => c && isInLoop(c)).length)
+      row.map((c, x) => getUpperLoopParts(x, y))
+      .filter(c => c && isInLoop(c)).length)
     .reduce((a, b) => a + b, 0);
 
-  return cages;
-}
+  function getUpperLoopParts(x, y) {
+    return !loop.some(([lx, ly]) => lx === x && ly === y)
+      && loop.filter(([lx, ly]) => lx === x && ly < y)
+      .map(([lx, ly]) => input[ly][lx])
+  }
 
-function isInLoop(loopParts) {
-  return Math.min(...loopParts.reduce((a, t) =>
-    addArray(a, t.reduce(([l, r], [x]) =>
-      [x < 0 ? l + 1 : l, x > 0 ? r + 1 : r], [0, 0])), [0, 0])) % 2 === 1;
-}
+  function isInLoop(loopParts) {
+    const lr = loopParts.reduce((a, t) =>
+        addArray(a, t.reduce(([l, r], [x]) =>
+          [x < 0 ? l + 1 : l, x > 0 ? r + 1 : r], [0, 0])), [0, 0]);
+    return Math.min(...lr) % 2 === 1;
+  }
 
-function addArray(a, b) {
-  return a.map((x, i) => x + b[i]);
+  function addArray(a, b) {
+    return a.map((x, i) => x + b[i]);
+  }
 }
 
 function getLoop() {
   start = start || findStart();
-  const loop = [start || findStart()];
-  let p = [start, start], t = getFirst2Tiles(start);
+  const loop = [start];
+  let prev = [start, start], tiles = getFirst2Tiles(start);
 
-  while ([0, 1].some(i => t[0][i] != t[1][i])) {
-    loop.push(...t);
-    n = t.map((e, i) => getNext(p[i], ...e));
-    p = t, t = n;
+  while ([0, 1].some(i => tiles[0][i] != tiles[1][i])) {
+    loop.push(...tiles);
+    let next = tiles.map((e, i) => getNext(prev[i], ...e));
+    prev = tiles, tiles = next;
   }
-  loop.push(t[0]);
+  loop.push(tiles[0]);
 
   return loop;
-}
 
-function findStart() {
-  for (let y = input.length; y-->0;)
-    for (let x = input[y].length; x-->0;)
-      if (input[y][x].length === 4)
-        return [x, y];
-}
+  function findStart() {
+    for (let y = input.length; y-->0;)
+      for (let x = input[y].length; x-->0;)
+        if (input[y][x].length === 4)
+          return [x, y];
+  }
 
-function getFirst2Tiles(s) {
-  const neighbors = getNeighbors(s)
-    .filter(t => t.every(x => x >= 0)
-      && getNeighbors(t).some(n =>
-        n.every((x, i) => x === s[i])));
+  function getFirst2Tiles(s) {
+    const neighbors = getNeighbors(s)
+      .filter(t => t.every(x => x >= 0)
+        && getNeighbors(t).some(n =>
+          n.every((x, i) => x === s[i])));
 
-  input[s[1]][s[0]] = neighbors.map(n => n.map((x,i)=>x - s[i]));
+    input[s[1]][s[0]] = neighbors.map(n => n.map((x,i)=>x - s[i]));
 
-  return neighbors;
-}
+    return neighbors;
+  }
 
-function getNext([px, py], x, y) {
-  return getNeighbors([x, y])
-    .filter(([nx, ny]) => nx != px || ny != py)[0];
-}
+  function getNext([px, py], x, y) {
+    return getNeighbors([x, y])
+      .filter(([nx, ny]) => nx != px || ny != py)[0];
+  }
 
-function getNeighbors([x, y]) {
-  return input[y][x].map(([dx, dy]) => [x + dx, y + dy]);
+  function getNeighbors([x, y]) {
+    return input[y][x].map(([dx, dy]) => [x + dx, y + dy]);
+  }
 }
 
 function init(data) {
