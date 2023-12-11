@@ -1,5 +1,3 @@
-const {frameIt, printMap} = require('../../../santasLittleHelper.js');
-
 let input, log, start;
 
 const tiles = {
@@ -37,29 +35,27 @@ function solve2(inp,l) {
 }
 
 function isInLoop(loopParts) {
-  const lr = [0,0];
-  for(let i=loopParts.length; i-->0;)
-    for(let j=loopParts[i].length; j-->0;)
-      if(loopParts[i][j][0]>0) lr[1]++;
-      else if(loopParts[i][j][0]<0) lr[0]++;
+  return Math.min(...loopParts.reduce((a,t)=>
+    addArray(a,t.reduce(([l,r],[x])=>
+      [x<0?l+1:l,x>0?r+1:r],[0,0])),[0,0]))%2===1;
+}
 
-  return Math.min(...lr)%2===1;
+function addArray(a,b) {
+  return a.map((x,i)=>x+b[i]);
 }
 
 function getLoop() {
   start = start || findStart();
-  const loop = [start];
-  let [[p1,[x1,y1]],[p2,[x2,y2]]] = get2Tiles(loop[0]);
+  const loop = [start || findStart()];
+  let p = [start,start], t = getFirst2Tiles(start);
 
-  while(x1!=x2||y1!=y2) {
-    loop.push([x1,y1]);
-    loop.unshift([x2,y2]);
-    let [nx1,ny1] = getNext(p1,x1,y1);
-    let [nx2,ny2] = getNext(p2,x2,y2);
-    p1 = [x1,y1], p2 = [x2,y2];
-    x1 = nx1, y1 = ny1, x2 = nx2, y2 = ny2;
+  while([0,1].some(i=>t[0][i]!=t[1][i])) {
+    loop.push(...t);
+    n = t.map((e,i)=>getNext(p[i],...e));
+    p = t, t = n;
   }
-  loop.push([x1,y1]);
+  loop.push(t[0]);
+
   return loop;
 }
 
@@ -70,7 +66,7 @@ function findStart() {
         return [x,y];
 }
 
-function get2Tiles(s) {
+function getFirst2Tiles(s) {
   const neighbors = getNeighbors(s)
     .filter(([x,y])=>x>=0&&y>=0)
     .filter(n=>getNeighbors(n)
@@ -78,7 +74,7 @@ function get2Tiles(s) {
   
   input[s[1]][s[0]] = neighbors.map(([x,y])=>[x-s[0],y-s[1]]);
   
-  return neighbors.map(([x,y])=>[s,[x,y]]);
+  return neighbors;
 }
 
 function getNext([px,py],x,y) {
