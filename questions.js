@@ -1,7 +1,7 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
 
-exports.intro = ()=>inquirer
+exports.intro = () => inquirer
   .prompt([
     {
       type: "list",
@@ -14,32 +14,32 @@ exports.intro = ()=>inquirer
       type: "list",
       name: "year",
       message: "Select a year",
-      when: ({action})=>action==="solve",
-      choices: getDirectories('./solutions').sort((a,b)=>b-a)
+      when: ({ action }) => action === "solve",
+      choices: getDirectories('./solutions').sort((a, b) => b - a)
     },
     {
       type: "list",
       name: "day",
       message: "Select a day",
-      when: ({action})=>action==="solve",
-      choices: ({year})=>getDirectories(`./solutions/${year}`)
-        .sort((a,b)=>b-a)
+      when: ({ action }) => action === "solve",
+      choices: ({ year }) => getDirectories(`./solutions/${year}`)
+        .sort((a, b) => b - a)
     },
     {
       type: "input",
       name: "year",
       message: "Which year",
-      when: ({action})=>action==="create new"
+      when: ({ action }) => action === "create new"
     },
     {
       type: "input",
       name: "day",
       message: "What day",
-      when: ({action})=>action==="create new"
+      when: ({ action }) => action === "create new"
     }
   ]);
 
-exports.rerun = ()=>inquirer
+exports.rerun = () => inquirer
   .prompt([
     {
       type: "confirm",
@@ -48,7 +48,7 @@ exports.rerun = ()=>inquirer
     }
   ]);
 
-exports.solveOptions = ()=>inquirer
+exports.solveOptions = () => inquirer
   .prompt([
     {
       type: "checkbox",
@@ -57,13 +57,13 @@ exports.solveOptions = ()=>inquirer
       choices: [{
         name: 'Test',
         checked: true
-      },{
+      }, {
         name: 'Debug',
         checked: false
-      },{
+      }, {
         name: 'Part 1',
         checked: true
-      },{
+      }, {
         name: 'Part 2',
         checked: true
       }]
@@ -77,5 +77,5 @@ function getDirectories(path) {
 }
 
 function lastChoice() {
-  return this.choices[this.choices.length-1]
+  return this.choices[this.choices.length - 1]
 }

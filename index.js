@@ -1,5 +1,7 @@
 const execSync = require('child_process').execSync;
+const fs = require('fs');
 const {intro,rerun} = require('./questions.js');
+const generalSolver = require('./solver.js');
 
 start();
 
@@ -11,7 +13,12 @@ function start() {
 }
 
 function solve({year,day}) {
-  execSync(`node ./solutions/${year}/${day}/solve.js`,{stdio: 'inherit'});
+  const specialSolveFile = `./solutions/${year}/${day}/solve.js`; 
+  if(fs.existsSync(specialSolveFile))
+    execSync(`node ${specialSolveFile}`,{stdio: 'inherit'});
+  else {
+    generalSolver(year,day);
+  }
   console.log('');
   rerun().then(({rerun}) => {
     if (rerun)
