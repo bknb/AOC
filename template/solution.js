@@ -1,4 +1,5 @@
 const {...helper} = require('../../../santasLittleHelper.js');
+const {...parser} = require('../../../parser.js');
 let input, log;
 
 function solve1(inp,l) {

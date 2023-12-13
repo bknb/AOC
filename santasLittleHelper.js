@@ -16,9 +16,9 @@ function getBounds(a, r) {
   return [min, max];
 }
 
-function fillWithinBounds(a, b) {
-  for (let i = b[1][0] + 1; i-- > b[0][0];)
-    for (let j = b[1][1] + 1; j-- > b[0][1];)
+function fillWithinBounds(a, [[x1,y1],[x2,y2]]) {
+  for (let i = ++x2; i-->x1;)
+    for (let j = ++y2; j-->y1;)
       a[i][j] = true;
 }
 
@@ -47,9 +47,10 @@ function frameIt(text, title = '', align = 'c') {
   if (title.length > width)
     title = title.substring(0, width);
   const rest = width - title.length;
+  const half = rest >> 1;
   const filler = '-'.repeat(rest);
   let result = align === 'c'
-    ? `+${filler.substring(0, rest >> 1)}${title}${filler.substring(rest >> 1)}+\n`
+    ? `+${filler.substring(0, half)}${title}${filler.substring(half)}+\n`
     : align === 'r' ? `+{filler}${title}$+\n` : `+${title}${filler}+\n`;
   result += text.split('\n').map(r =>
     `|${r}${' '.repeat(width - r.replace(/\x1B\[\d+m/g, '').length)}|`)
@@ -64,9 +65,8 @@ function arr2obj(a) {
   return o;
 }
 
-function rng(n, m) {
-  const min = Math.min(n, m), max = Math.max(n, m);
-  return [...Array(max - min)].map((x, i) => i + min);
+function rng(n, m = 0) {
+  return [...Array(m - n)].map((_, i) => i + n);
 }
 
 function d1([x1, y1], [x2, y2]) {
@@ -77,13 +77,29 @@ function sum() {
   return [...arguments].reduce((a, c) => a + c, 0);
 }
 
+function prd() {
+  return [...arguments].reduce((a, c) => a * c, 1);
+}
+
 function transpose(arr) {
   return Array(arr[0].length).fill()
     .map((_, i) => arr.map(row => row[i]));
 }
 
+function sumToN(n) {
+  return n * (n + 1) / 2;
+}
+
+function findCoordinates (m, test) {
+  return m.reduce((a, c, y) =>
+    a.concat(c.reduce((a, c, x) =>
+      (test ? test(c) : c) ? 
+      a.concat([[x, y]]) : a, [])), []);
+}
+
 module.exports = {
   getBounds,
+  findCoordinates,
   fillWithinBounds,
   inBounds,
   inRange,
@@ -92,7 +108,9 @@ module.exports = {
   printMap,
   frameIt,
   arr2obj,
+  sumToN,
   rng,
   sum,
+  prd,
   d1
 }

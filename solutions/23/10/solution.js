@@ -1,3 +1,4 @@
+const { grid } = require('../../../parser.js');
 let input, log, start;
 
 const tiles = {
@@ -89,7 +90,7 @@ function getLoop() {
 }
 
 function init(data) {
-  return data.split('\n').map(row => row.split('').map(c => tiles[c]));
+  return grid().complex(tiles)(data);
 }
 
 module.exports = { init, solve1, solve2 }

@@ -1,4 +1,6 @@
-const { transpose, inRange } = require('../../../santasLittleHelper.js');
+const { transpose, inRange, d1, sum , findCoordinates} = 
+  require('../../../santasLittleHelper.js');
+const { grid } = require('../../../parser.js');
 
 let input, log;
 function solve1(inp, l) {
@@ -12,25 +14,21 @@ function solve2(inp, l) {
 function solve(inp, l, factor) {
   input = inp, log = l;
 
-  const emptyRows = getEmpty(input)
-  const emptyCols = getEmpty(transpose(input));
+  const empty = [transpose(input), input].map(getEmpty);
 
-  const pairs = input.reduce((a, c, y) =>
-    a.concat(c.reduce((a, c, x) =>
-      c ? a.concat([[x, y]]) : a, [])), [])
+  const pairs = findCoordinates(input)
     .map((g, i, all) => [g, all.slice(i + 1)]);
 
-  return pairs.map(([g, ns]) => ns.map(n => getDistance(g, n))
-    .reduce((a, b) => a + b, 0)).reduce((a, b) => a + b);
+  return sum(...pairs.map(([g, ns]) => 
+    sum(...ns.map(n => getDistance(g, n)))));
 
-  function getDistance([gx, gy], [nx, ny]) {
-    const result = Math.abs(gx - nx) + Math.abs(gy - ny)
-      + getSpace(emptyRows, gy, ny) + getSpace(emptyCols, gx, nx);
-    return result;
+  function getDistance(g, n) {
+    return d1(g, n) + [0,1].reduce((a,e,i)=>
+      a + expandSpace(empty[i], g[i], n[i]), 0);
   }
 
-  function getSpace(arr, b1, b2) {
-    return arr.filter(inRange(b1, b2)).length * (factor - 1)
+  function expandSpace(space, b1, b2) {
+    return space.filter(inRange(b1, b2)).length * (factor - 1);
   }
 }
 
@@ -39,7 +37,7 @@ function getEmpty(arr) {
 }
 
 function init(data, log) {
-  return data.split('\n').map(row => row.split('').map(c => c === '#'));
+  return grid().boolean()(data);
 }
 
 module.exports = { init, solve1, solve2 }
