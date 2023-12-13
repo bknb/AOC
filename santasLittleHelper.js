@@ -36,8 +36,8 @@ function create2DimArray(x, y, f) {
 
 function printMap(m, s, b) {
   if (b) m = m.map(r => r.slice(b[0][1], b[1][1])).slice(b[0][0], b[1][0]);
-  return m.map((r, x) => r
-    .map(c => s ? s[c] || '.' : (c ? '#' : '.')).join('')).join('\n');
+  return m.map(r => r.map(c => s ? s[c] || '.' : (c ? '#' : '.'))
+    .join('')).join('\n');
 }
 
 function frameIt(text, title = '', align = 'c') {
@@ -65,7 +65,7 @@ function arr2obj(a) {
   return o;
 }
 
-function rng(n, m = 0) {
+function rng(n, m) {
   return [...Array(m - n)].map((_, i) => i + n);
 }
 
@@ -86,8 +86,9 @@ function transpose(arr) {
     .map((_, i) => arr.map(row => row[i]));
 }
 
-function sumToN(n) {
-  return n * (n + 1) / 2;
+function sumOfSums(n,m) {
+  const l = [...Array(m)].map((_,i)=>i+1);
+  return prd(...l.map(i=>n+i-1))/prd(...l);
 }
 
 function findCoordinates (m, test) {
@@ -97,6 +98,25 @@ function findCoordinates (m, test) {
       a.concat([[x, y]]) : a, [])), []);
 }
 
+function dist(elems, buckets, acc = []) {
+  console.log(elems, buckets, acc);
+  if (buckets.length === 1)
+    return [[...acc,...elems.map(e=>[e,buckets[0]])]];
+  if (elems.length === 1)
+    return buckets.map(b=>[...acc,[elems[0],b]]);
+  return buckets.map((_,i)=>buckets.slice(i))
+    .map(bs=>dist(elems.slice(1), bs, acc
+                  .concat([[elems[0],bs[0]]]))).flat();
+}
+
+function combi(arr,n) {
+  if (n === 0) return [];
+  if (n === 1) return [...arr.map(x=>[x])];
+  return arr.map((x,i)=>
+    combi(arr.slice(i+1),n-1)
+    .map(y=>y.concat([x]))).flat();
+}
+
 module.exports = {
   getBounds,
   findCoordinates,
@@ -104,11 +124,13 @@ module.exports = {
   inBounds,
   inRange,
   create2DimArray,
+  sumOfSums,
   transpose,
   printMap,
   frameIt,
   arr2obj,
-  sumToN,
+  combi,
+  dist,
   rng,
   sum,
   prd,

@@ -1,10 +1,11 @@
-const {sumToN,sum} = require('../../../santasLittleHelper.js');
+const {sum} = require('../../../santasLittleHelper.js');
 const {grid, multiSet} = require('../../../parser.js');
 const { transpose } = require('mathjs');
 let input, log;
 
 function solve1(inp,l) {
   input = inp, log = l;
+
   return sumRefl(getAllMirrors());
 }
 
@@ -52,9 +53,9 @@ function getSmudgedMirror(grid) {
   const allMirrors = [...Array(grid[0].length)].fill(0);
 
   grid.map(mirrors).forEach(ms =>ms.forEach(i=>allMirrors[i]++));
-  return log(allMirrors.map((x,i)=>[x,i])
+  return allMirrors.map((x,i)=>[x,i])
     .filter(([x])=>x===grid.length-1)
-    .map(([,i])=>i));
+    .map(([,i])=>i);
 }
 
 function getMirror(grid) {
