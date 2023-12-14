@@ -1,6 +1,7 @@
-const {frameIt, sum, getRows, getCols, getGrid} = require('../../../santasLittleHelper.js');
+const {sum, getRows, getCols, getGrid, printMap} = 
+  require('../../../santasLittleHelper.js');
 const {grid} = require('../../../parser.js');
-let input, log;
+let input, log, g = grid();
 const regex = [
   [/([O#]|^)(\.+)(O+)/g, '$1$3$2'],
   [/(O+)(\.+)([O#]|$)/g, '$2$1$3'],
@@ -17,14 +18,15 @@ function solve2(inp,l) {
   let i;
   for (i = 0;i<cycles;i++) {
     input = fullCycle(input);
-    if (map.has(input.join('\n'))) break;
-    map.set(input.join('\n'),i);
+    if (map.has(printMap(input,0))) break;
+    map.set(printMap(input,0),i);
   }
-  const f = map.get(input.join('\n'));
+  const f = map.get(printMap(input,0));
   const s = (cycles-i-1)%(i-f);
-  for (let k = 0; k<s; k++)
-    input = fullCycle(input);
-  return getScore(input);
+  for (let [key, value] of map.entries()) {
+    if (value === f+s)
+      return getScore(g(key));
+  }
 }
 
 function fullCycle(input) {
@@ -50,12 +52,7 @@ function getScore(grid) {
 }
 
 function init(data,log) {
-  return grid()(data);
-}
-
-function draw(grid) {
-  log(frameIt(getRows(grid).join('\n')));
-  return grid;
+  return g(data);
 }
 
 module.exports = {init, solve1, solve2}

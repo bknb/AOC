@@ -49,7 +49,8 @@ function getGrid(lines, isCol) {
 
 function printMap(m, s, b) {
   if (b) m = m.map(r => r.slice(b[0][1], b[1][1])).slice(b[0][0], b[1][0]);
-  return m.map(r => r.map(c => s ? s[c] || '.' : (c ? '#' : '.'))
+  const map = typeof s === 'object' ? c=>s[c] : s ?? (c => c ? '#' : '.');
+  return m.map(r => (map ? r.map(map) : r)
     .join('')).join('\n');
 }
 
