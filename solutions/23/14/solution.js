@@ -14,18 +14,18 @@ function solve1(inp,l) {
 
 function solve2(inp,l) {
   input = inp, log = l;
-  const map = new Map(), cycles = 1000000000;
-  let i;
-  for (i = 0;i<cycles;i++) {
+  const map = new Map(), total = 1000000000;
+  let current;
+  for (current = 0;current<total;current++) {
     input = fullCycle(input);
     if (map.has(printMap(input,0))) break;
-    map.set(printMap(input,0),i);
+    map.set(printMap(input,0),current);
   }
-  const f = map.get(printMap(input,0));
-  const s = (cycles-i-1)%(i-f);
-  for (let [key, value] of map.entries()) {
-    if (value === f+s)
-      return getScore(g(key));
+  const firstIndex = map.get(printMap(input,0));
+  const cycleLength = (total-current-1)%(current-firstIndex);
+  for (let [gridString, index] of map.entries()) {
+    if (index === firstIndex+cycleLength)
+      return getScore(g(gridString));
   }
 }
 
