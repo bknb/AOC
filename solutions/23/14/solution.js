@@ -22,17 +22,11 @@ function solve2(inp,l) {
     map.set(printMap(input,0),current);
   }
   const firstIndex = map.get(printMap(input,0));
-  const cycleLength = (total-current-1)%(current-firstIndex);
+  const indexInCycle = (total-current-1)%(current-firstIndex);
   for (let [gridString, index] of map.entries()) {
-    if (index === firstIndex+cycleLength)
+    if (index === firstIndex+indexInCycle)
       return getScore(g(gridString));
   }
-}
-
-function fullCycle(input) {
-  for(let j = 0; j<4; j++) 
-    input = fall(input,j);
-  return input;
 }
 
 function fall(grid, direction) {
@@ -49,6 +43,12 @@ function fall(grid, direction) {
 function getScore(grid) {
   return sum(...[...grid].reverse().map((row,i)=>
     sum(...row.map(x=>x==='O'?i+1:0))));
+}
+
+function fullCycle(input) {
+  for(let j = 0; j<4; j++) 
+    input = fall(input,j);
+  return input;
 }
 
 function init(data,log) {
