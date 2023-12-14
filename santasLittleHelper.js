@@ -34,6 +34,19 @@ function create2DimArray(x, y, f) {
   return [...Array(x)].map(() => [...Array(y)].fill(f));
 }
 
+function getRows(grid) {
+  return grid.map(row=>row.join(''));
+}
+
+function getCols(grid) {
+  return grid.map((_, i) => grid.map(row => row[i]).join(''));
+}
+
+function getGrid(lines, isCol) {
+  if (!isCol) return lines.map(line=>line.split(''));
+  return lines[0].split('').map((_,i)=>lines.map(line=>line[i]));
+}
+
 function printMap(m, s, b) {
   if (b) m = m.map(r => r.slice(b[0][1], b[1][1])).slice(b[0][0], b[1][0]);
   return m.map(r => r.map(c => s ? s[c] || '.' : (c ? '#' : '.'))
@@ -98,6 +111,10 @@ function findCoordinates (m, test) {
       a.concat([[x, y]]) : a, [])), []);
 }
 
+function flip(arr) {
+  return [...arr].reverse();
+}
+
 function dist(elems, buckets, acc = []) {
   console.log(elems, buckets, acc);
   if (buckets.length === 1)
@@ -129,7 +146,11 @@ module.exports = {
   printMap,
   frameIt,
   arr2obj,
+  getRows,
+  getCols,
+  getGrid,
   combi,
+  flip,
   dist,
   rng,
   sum,

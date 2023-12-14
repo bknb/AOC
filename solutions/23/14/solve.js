@@ -1,7 +1,7 @@
 const colors = require('colors');
 const fs = require('fs');
 const {solveOptions} = require('../../../questions.js');
-const {lineWise} = require('../../../parser.js');
+const {init, solve1, solve2} = require('./solution.js');
 
 colors.setTheme({
   test: ['italic','bold'],
@@ -13,25 +13,6 @@ colors.setTheme({
 let debug, test, input;
 
 solveOptions().then(startSolver);
-  
-function solve1(input) {
-  const getNext = row =>
-    row.every(x=>!x) ? 0 : row[row.length-1] +
-    getNext(row.slice(1).reduce((a,b,i)=>a.concat(b-row[i]),[]));
-  return input.map(getNext).reduce((a,b)=>a+b);
-}
-
-function solve2(input) {
-  return solve1(input.map(x=>x.reverse()));
-}
-
-function init(data) {
-  input = lineWise().match().numberfy()(data);
-}
-
-function solve(input, part) {
-  return part === 1 ? solve1(input) : solve2(input);
-}
 
 function startSolver({options}) {
   console.log('');
@@ -39,18 +20,22 @@ function startSolver({options}) {
   if (test) {
     console.log("~~TestRun~~".test);
   }
-  const path = require('path')
+  const filePath = require('path')
     .resolve(__dirname, (test ? 'test' : 'input') + '.txt');
-  fs.readFile(path, 'utf8', handleInput(options));
+  fs.readFile(filePath, 'utf8', handleInput(options));
+}
+
+function solve(part, ...rest) {
+  return part === 1 ? solve1(...rest) : solve2(...rest);
 }
 
 function handleInput(options) {
   return (err, data) => {
     if (err) return console.error(err);
-    
+
     debug = options.includes("Debug");
     const prepStart = performance.now();
-    init(data);
+    input = init(data,log);
     const prepTime = performance.now()-prepStart;
     log('Input:'.blue, input);
     console.log(`prepared in ${prepTime.toFixed(2)}ms\n`.yellow);
@@ -59,7 +44,7 @@ function handleInput(options) {
       .forEach(part => {
         console.log(`-------\n${`Part ${part}:`.main}\n-------`);
         const start = performance.now();
-        console.log('Solution: '.red.bold+solve(input,part));
+        console.log('Solution: '.red.bold+solve(part,input,log));
         console.log(`in ${(performance.now()-start).toFixed(2)}ms\n`.magenta);
       });
   }

@@ -22,37 +22,41 @@ function grid(mapper) {
   return gridFactory
 }
 
+function linify(input) {
+  return input.split('\n');
+}
+
 function lineWise(mappers = [], filters = []) {
-  const lineWiseFactory = (input) => {
-    const lines = input.split('\n');
-    
-    while (mappers.length || filters.length) {
-      const mapper = mappers.shift();
-      const filter = filters.shift();
-      if (mapper) lines.map(mapper);
-      if (filter) lines.filter(filter);
-    }
+  let q = [...mappers.map(m=>[m,true]),
+           ...filters.map(f=>[f,false])];
+  const lineWiseFactory = (lines) => {
 
-    return lines;
+    return q.reduce((a,[e,m])=>
+        m?a.map(e):a.filter(e),lines);
   }
 
-  lineWiseFactory.addMapper = (mapper) => {
-    mappers.push(mapper);
+  lineWiseFactory.map = (mapper) => {
+    q.push([mapper,true]);
     return lineWiseFactory;
   }
 
-  lineWiseFactory.addFilter = (filter) => {
-    filters.push(filter);
+  lineWiseFactory.filter = (filter) => {
+    q.push([filter,false]);
     return lineWiseFactory;
   }
 
-  lineWiseFactory.addMatchMapper = (regex = /\w+/g) => {
-    mappers.push((line) => line.match(regex));
+  lineWiseFactory.numberfy = () => {
+    q.push([(line) => line.map(d=>isNaN(d)?d:+d),true]);
     return lineWiseFactory;
   }
 
-  lineWiseFactory.addTestFilter = (regex) => {
-    filters.push((line) => regex.test(line));
+  lineWiseFactory.match = (regex = /[-\w]+/g) => {
+    q.push([(line) => line.match(regex),true]);
+    return lineWiseFactory;
+  }
+
+  lineWiseFactory.test = (regex) => {
+    q.push([(line) => regex.test(line),false]);
     return lineWiseFactory;
   }
 
@@ -82,4 +86,4 @@ function multiSet(seperator = /^\s*$/, mapper) {
   return multiSetFactory;
 }
 
-module.exports = {grid, multiSet, lineWise}
+module.exports = {grid, multiSet, lineWise, linify}
