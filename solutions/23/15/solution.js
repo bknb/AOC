@@ -9,8 +9,8 @@ function solve1(inp,l) {
 function solve2(inp,l) {
   input = inp, log = l;
   const boxes = Array(256).fill([]).map(()=>[]);
-  const ins = input.map(seq=>[...seq.match(/\w+/g),/=/.test(seq)]);
-  ins.forEach(([name,fl,eq])=> {
+  const ins = input.map(seq=>[/=/.test(seq),...seq.match(/\w+/g)]);
+  ins.forEach(([eq,name,fl])=> {
     const box = boxes[hashCode(name)];
     const index = box.findIndex(([n])=>n===name);
     if (!eq) index!==-1&&box.splice(index,1);
