@@ -25,7 +25,7 @@ function hashCode(seq) {
   for (let c of seq) {
     current += c.charCodeAt(0);
     current *= 17;
-    current = current % 256;
+    current %= 256;
   }
   return current;
 }
