@@ -87,7 +87,7 @@ function patternSolutions([pattern, nums]) {
 }
 
 function chunkSolutions(chunks,nums) {
-  if (nums.lenght === 0) return 1;
+  if (nums.length === 0) return 1;
   if (!isValid(chunks)) return 0;
   return sum(...nums.map((n,i) => {
     const testNums = nums.slice(0,i);
