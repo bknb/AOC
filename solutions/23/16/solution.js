@@ -19,23 +19,24 @@ function solve1(inp,l) {
 
 function solve2(inp,l) {
   input = inp, log = l;
-  const startGroup = Array(input.length)
-    .fill().map((_,i)=>[0,i,0]);
-  console.log(input[0].length);
-  startGroup.push(...Array(input[0].length)
-                   .fill().map((_,i)=>[i,0,1]));
-  //startGroup.push(...Array(input.length)
-                 //  .fill().map((_,i)=>[input.length-1,i,2]));
-  //startGroup.push(...Array(input[0].length)
-                 //  .fill().map((_,i)=>[i,input[0].length-1,3]));
+  const startGroup = [...Array(4)]
+    .map((_,i)=>genGroup(i))
+    .reduce((a,e)=>a.concat(e));
   return Math.max(...log(startGroup.map(s=>beam(...s))));
+}
+
+function genGroup(dir) {
+  const length = dir%2?input[0].length:input.length;
+  const line = ~~(dir/2)?length-1:0;
+  return [...Array(length)]
+    .map((_,i)=>[dir%2?i:line,dir%2?line:i,dir])
 }
 
 function beam(x,y,d) {
   const ins = partDict[input[y][x]][d].map(nd=>[x,y,nd]);
   const energyMap = create2DimArray(input[0].length,input.length,false);
   let current;
-  while(log(current = ins.shift())) {
+  while(current = ins.shift()) {
     const [x,y,dir] = current;
     log(frameIt(printMap(energyMap,x=>x.length?dirDict[x[0]]:' ')),ins);
     if (energyMap[y][x]) 
