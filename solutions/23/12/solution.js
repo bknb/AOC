@@ -8,28 +8,32 @@ function solve1(inp, l) {
 }
 
 function possibilities([p,n]) {
-  p = p.replace(/^\.+|\.+$/g,'');
-  const areas = getAreas(n,p.length);
-  p = updatePattern(p,areas);
-  const unknownRanges = getRanges(p,/\?+/g);
-  if(!unknownRanges.length)  return 1;
-  const blockRanges = getRanges(p,/#+/g);
-  p = log(cleanArea(p,areas));
-  const chunkRanges = getRanges(p,/[^\.]+/g);
+  let oldP = '', areas = [[]];
+  do {
+    oldP = p;
+    if (!p.length) return 1;
+    p = p.replace(/^\.+|\.+$/g,'');
+    if (/^\?+$/.test(p)) return calc(p,n);
+    areas = getAreas(n,p.length);
+    p = updatePattern(p,areas);
+    if(!getRanges(p,/\?+/g).length) return 1;
+  } while(oldP !== p);
   return [p,areas.map(([a])=>a)];
 }
 
-function cleanArea(pattern,areas) {
-  const blockRanges = getRanges(pattern,/#+/g);
-  pattern = clean(blockRanges.length-1,areas.length-1,pattern);
-  return clean(0,0,pattern);
-  function clean(i,j,p) {
-    log(blockRanges[i],areas[j],p);
-    if (rangeLength(blockRanges[i]) == areas[j][0]
-        && isInRange(blockRanges[i], areas[j][1])
-        && rngIntersect(blockRanges[i], areas[j][2]).length) {
-      areas.splice(j,1);
-      return replaceArea(p,borderedRange(blockRanges[i]),'.');
+function cleanArea(pattern,as) {
+  const blkRngs = getRanges(pattern,/#+/g);
+  pattern = clean(pattern,true);
+  return clean(pattern);
+  function clean(p,switched) {
+    const blkRng = blkRngs[switched?blkRngs.length-1:0];
+    const a = as[switched?as.length-1:0];
+    const lri = switched?4:3;
+    log(blkRng,a,p);
+    if (rangeLength(blkRng) == a[0]
+        && rngIntersect(blkRng, a[lri]).length) {
+      as.splice(switched?-1:0,1);
+      return replaceArea(p,borderedRange(blkRng),'.');
     }
     return p;
   }
@@ -69,7 +73,7 @@ function replaceArea(str, rng, val = '#') {
 
 function getAreas(nums,length) {
   return nums.map(ranges(length))
-    .map(([bl,ls,rs])=>[bl,rngUnion(ls,rs),rngIntersect(ls,rs)]);
+    .map(([bl,ls,rs])=>[bl,rngUnion(ls,rs),rngIntersect(ls,rs),ls,rs]);
 }
 
 function ranges(length) {
@@ -108,17 +112,13 @@ function rngHelper([l1,r1],[l2,r2]) {
   return [Math.max(l1,l2),Math.min(r1,r2)];
 }
 
-function markUnpossible(pattern,areas) {
-  
-}
-
 function minLengthFor(arr) {
   if (arr.length===0) return 0;
   return sum(...arr) + arr.length - 1;
 }
 
 function unfold([pattern,nums]) {
-  const unfoldedPattern = Array(5).fill(pattern).flat().join('?');
+  const unfoldedPattern = Array(5).fill(pattern).join('?');
   const unfolledNums = Array(5).fill(nums).flat();
   return [unfoldedPattern,unfolledNums];
 }

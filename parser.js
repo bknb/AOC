@@ -1,21 +1,21 @@
 function grid(mapper) {
   const gridFactory = (input) => {
     const rawGrid = input.split('\n').map(r => r.split(''));
-    return mapper ? rawGrid.map(mapper) : rawGrid;
+    return mapper ? rawGrid.map(r=>r.map(mapper)) : rawGrid;
   }
 
   gridFactory.boolean = (symbol = '#') => {
-    mapper = (r) => r.map(c => c === symbol);
+    mapper = c => c === symbol;
     return gridFactory;
   }
 
   gridFactory.number = () => {
-    mapper = (r) => r.map(c => +c);
+    mapper = c => +c;
     return gridFactory;
   }
 
   gridFactory.complex = (dict) => {
-    mapper = (r) => r.map(c => dict[c]);
+    mapper = c => dict[c];
     return gridFactory;
   }
 
