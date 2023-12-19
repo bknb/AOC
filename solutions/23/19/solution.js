@@ -25,16 +25,14 @@ function solve2(inp,l) {
   return resolve(all,'in');
 
   function resolve(e,wf) {
-    log(e,wf)
-    if (wf === 'A') return prd(log(Object.values(e).map(([l,h])=>h-l+1),e));
+    if (wf === 'A')
+      return prd(Object.values(e).map(([l,h])=>h-l+1));
     if (wf === 'R') return 0;
-
     let rest, d, total = 0;
     for (let i=1;i<iMap[wf].length;i++) {
       [rest,e,d] = split(e,...iMap[wf][i]);
       total += resolve(rest,d);
     }
-    
     return total + resolve(e,iMap[wf][0]);
   }
 
