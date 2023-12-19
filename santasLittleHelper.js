@@ -93,8 +93,9 @@ function sum(arr) {
     .reduce((a, c) => a + c, 0);
 }
 
-function prd() {
-  return [...arguments].reduce((a, c) => a * c, 1);
+function prd(arr) {
+  return (typeof arr === 'object' ? arr : [...arguments])
+    .reduce((a, c) => a * c, 1);
 }
 
 function transpose(arr) {
@@ -105,6 +106,10 @@ function transpose(arr) {
 function sumOfSums(n,m) {
   const l = [...Array(m)].map((_,i)=>i+1);
   return prd(...l.map(i=>n+i-1))/prd(...l);
+}
+
+function rangeSum([n,m]) {
+  return (m-n+1)*(n+m)>>1;
 }
 
 function findCoordinates (m, test) {
@@ -147,6 +152,7 @@ module.exports = {
   sumOfSums,
   transpose,
   printMap,
+  rangeSum,
   frameIt,
   arr2obj,
   getRows,
