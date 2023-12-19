@@ -9,10 +9,10 @@ function solve1(inp,l) {
   let y = 0;
   const values = input.map(([dir,len])=>
       [dir%2?0:len*(dir>>1?1:-1),
-       dir%2?dir>>1?y-=len:y+=len:y]);
-  const peri = sum(...input.map(([,len])=>len))>>1;
-  return values.filter(([dx])=>dx)
-    .reduce((acc,[dx,y])=>acc+y*dx,0)+peri+1;
+       dir%2?dir>>1?y-=len:y+=len:y])
+    .filter(([dx])=>dx);
+  const peri = sum(input.map(([,len])=>len))>>1;
+  return sum(values.map(([dx,y])=>y*dx))+peri+1;
 }
 
 function solve2(inp,l) {
