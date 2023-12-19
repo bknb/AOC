@@ -10,9 +10,10 @@ function solve1(inp,l) {
   input = inp, log = l;
   avg/=input.length*input[0].length;
   console.log(avg,input.length,input[0].length);
-  const dists = create2DimArray(input.length, input[0].length,
-                                [Number.MAX_VALUE,[]]);
-  dists[0][0] = [0,[]];
+  const dists = create2DimArray(
+    input.length, input[0].length,
+    ()=>create2DimArray(4,3,Number.MAX_VALUE));
+  dists[0][0] = create2DimArray(4,3,0);
   const q = [[1,0,0,0,1,heu(1,0,0)]];
   insertSorted(q,[0,1,0,1,1,heu(0,1,0)]);
   while(q.length) {
@@ -21,22 +22,26 @@ function solve1(inp,l) {
     const [x,y,o,d,c] = q.shift();
     const n = o+input[y][x];
     log(c,dirs[d],x,y,`(${n})`);
-    if(n>=dists[y][x][0]) continue;
-    const [px,py] = [x-dirMap[d][0],y-dirMap[d][1]];
-    const path = (px<0||py<0)?[]:dists[py][px][1];
-    dists[y][x]=[n,[...path,[x,y,dirs[d]]]];
+    if(n>log(dists[y][x],y,x)[d][c]) continue;
+    //const [px,py] = [x-dirMap[d][0],y-dirMap[d][1]];
+    //const path = (px<0||py<0)?[]:dists[py][px][1];
+    dists[y][x][d][c]=n;
     [...Array(4)].map((_,nd)=>
       [x+dirMap[nd][0],y+dirMap[nd][1],nd,d===nd?c+1:1])
       .filter(inGrid).filter(nd=>d!==nd[2]?d!==(nd[2]+2)%2:nd[3]<3)
       .forEach(([x,y,nd,nc])=>insertSorted(q,[x,y,n,nd,nc,heu(x,y,n)]));
   }
   //log(dists);
-  console.log(printMap(input,d=>d));
-  console.log(dists[dists.length-1][dists[0].length-1][1].forEach(([x,y,d])=>
-    input[y][x]=d))
+  //console.log(printMap(input,d=>d));
+  //console.log(dists[dists.length-1][dists[0].length-1][1]
+  //            .forEach(([x,y,d])=>input[y][x]=d))
   console.log(printMap(input,d=>d));
   console.log()
-  console.log(printMap(dists.map(d=>d.map(c=>c[0])),d=>d>9?String.fromCharCode(55+d):d))
+  console.log(printMap(dists.map(d=>
+    d.map(c=>c.reduce((a,c)=>
+      Math.min(a,c.reduce((a,c)=>
+        Math.min(a,c)))))),d=>
+    d>9?String.fromCharCode(55+d):d));
   return dists[dists.length-1][dists[0].length-1][0];
 }
 

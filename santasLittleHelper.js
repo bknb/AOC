@@ -31,7 +31,8 @@ function inRange(b1, b2) {
 }
 
 function create2DimArray(x, y, f) {
-  return [...Array(x)].map(() => [...Array(y)].fill(f));
+  return [...Array(x)].map(() =>
+    [...Array(y)].fill(typeof f === 'function' ? f() : f));
 }
 
 function getRows(grid) {
