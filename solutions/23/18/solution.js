@@ -7,11 +7,12 @@ const letterDir={R:0,D:1,L:2,U:3};
 function solve1(inp,l) {
   input = inp, log = l;
   let y = 0;
-  const values = input.map(([d,l])=>
-      [d%2?0:l*(d>>1?1:-1),d%2?d>>1?y-=l:y+=l:y]);
-  const p = sum(...input.map(([,l])=>l))>>1;
+  const values = input.map(([dir,len])=>
+      [dir%2?0:len*(dir>>1?1:-1),
+       dir%2?dir>>1?y-=len:y+=len:y]);
+  const peri = sum(...input.map(([,len])=>len))>>1;
   return values.filter(([dx])=>dx)
-    .reduce((a,[dx,y])=>a+y*dx,0)+p+1;
+    .reduce((acc,[dx,y])=>acc+y*dx,0)+peri+1;
 }
 
 function solve2(inp,l) {
