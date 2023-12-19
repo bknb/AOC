@@ -1,4 +1,4 @@
-const {sum, rangeSum,prd} = require('../../../santasLittleHelper.js');
+const {sum,prd, rngIntersect} = require('../../../santasLittleHelper.js');
 const {multiSet, linify, lineWise} = require('../../../parser.js');
 let input, log;
 
@@ -42,16 +42,6 @@ function solve2(inp,l) {
     rest[a] = rngIntersect(e[a],b==='<'?[+v,4000]:[0,+v]);
     return [splitted,rest,d];
   }
-}
-
-function rngIntersect(rng1,rng2) {
-  if (!rng1.length || !rng2.length) return [];
-  const [maxL,minR] = rngHelper(rng1,rng2);
-  return minR>=maxL?[maxL,minR]:[];
-}
-
-function rngHelper([l1,r1],[l2,r2]) {
-  return [Math.max(l1,l2),Math.min(r1,r2)];
 }
 
 function init(data,log) {

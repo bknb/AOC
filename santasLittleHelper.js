@@ -112,6 +112,16 @@ function rangeSum([n,m]) {
   return (m-n+1)*(n+m)>>1;
 }
 
+function rngIntersect(rng1,rng2) {
+  if (!rng1.length || !rng2.length) return [];
+  const [maxL,minR] = rngHelper(rng1,rng2);
+  return minR>=maxL?[maxL,minR]:[];
+}
+
+function rngHelper([l1,r1],[l2,r2]) {
+  return [Math.max(l1,l2),Math.min(r1,r2)];
+}
+
 function findCoordinates (m, test) {
   return m.reduce((a, c, y) =>
     a.concat(c.reduce((a, c, x) =>
@@ -149,6 +159,7 @@ module.exports = {
   inBounds,
   inRange,
   create2DimArray,
+  rngIntersect,
   sumOfSums,
   transpose,
   printMap,
