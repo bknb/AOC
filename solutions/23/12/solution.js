@@ -1,61 +1,148 @@
-const { sum, sumOfSums } = require('../../../santasLittleHelper.js');
+const { sum, sumOfSums, prd } = require('../../../santasLittleHelper.js');
 const { linify, lineWise } = require('../../../parser.js');
 let input, log;
 
 function solve1(inp, l) {
   input = inp, log = l;
-  return sum(...log(input.map(possibilities)));
+  return sum(log(input.map(possibilities)));
 }
 
-function possibilities([p,n]) {
-  let oldP = '', areas = [[]];
+function possibilities([p,n],i) {
+  let oldP, oldN;
+  log('start',i)
   do {
-    oldP = p;
-    if (!p.length) return 1;
-    p = p.replace(/^\.+|\.+$/g,'');
+    if (!n.length) return 1;
+    oldP = p;oldN = n;
+    p = p.replace(/^\.+/g,'');
+    p = p.match(/#+\?#+/g)
+      ?.filter(m=>m.length>Math.max(...n))
+      .reduce(a=>a.replace(/(#+)\?(#+)/,'$1.$2'),p) || p;
+    log(p.match(/\.#+\./g)?.filter(m=>
+      n.filter(n=>
+        n===m.length-2).length===1))
+    log(p,n)
     if (/^\?+$/.test(p)) return calc(p,n);
-    areas = getAreas(n,p.length);
-    p = updatePattern(p,areas);
-    if(!getRanges(p,/\?+/g).length) return 1;
-  } while(oldP !== p);
-  return [p,areas.map(([a])=>a)];
-}
-
-function cleanArea(pattern,as) {
-  const blkRngs = getRanges(pattern,/#+/g);
-  pattern = clean(pattern,true);
-  return clean(pattern);
-  function clean(p,switched) {
-    const blkRng = blkRngs[switched?blkRngs.length-1:0];
-    const a = as[switched?as.length-1:0];
-    const lri = switched?4:3;
-    log(blkRng,a,p);
-    if (rangeLength(blkRng) == a[0]
-        && rngIntersect(blkRng, a[lri]).length) {
-      as.splice(switched?-1:0,1);
-      return replaceArea(p,borderedRange(blkRng),'.');
+    let as = getAreas(n,p.length);
+    p = addMandatory(p,as);
+    log(p,n,'after mandatory')
+    if (/^[^\?]*$/.test(p)) return 1;
+    let blk = nBlk(p,/^\?+(?=\.)/);
+    if (rngL(blk)<n[0]) 
+      p = replace(p,blk,'');
+    blk = nBlkU(p,/#+/g,n[0]);
+    if (blk.length) {
+      if (blk[0]===0) {
+        p = p.slice(1+n[0]);
+        n.shift();
+        continue;
+      }
+      if (p[blk[1]]==='.') {
+        p = p.slice(1+n[0]);
+        n.shift();
+        continue;
+      }
+      if (rngI(blk,as[0][3]).length) {
+        p = replace(p,blk,'');
+        if(!(n[0]-=rngL(blk))) {
+          p = p.slice(1+blk[0]);
+          n.shift();
+        }
+        continue;
+      }
     }
-    return p;
+    log(p,n);
+    p = reverse(p); n = n.reverse();
+    p = p.replace(/^\.+/g,'');
+    log(p,n);
+    if (/^\?+$/.test(p)) return calc(p,n);
+    as = getAreas(n,p.length);
+    p = addMandatory(p,as);
+    if (/^[^\?]*$/.test(p)) return 1;
+    blk = nBlk(p,/^\?+(?=\.)/);
+    if (rngL(blk)<n[0]) 
+      p = replace(p,blk,'');
+    blk = nBlkU(p,/#+/g,n[0]);
+    if (blk.length) {
+      if (blk[0]===0) {
+        p = p.slice(1+n[0]);
+        n.shift();
+        continue;
+      }
+      if (p[blk[1]]==='.') {
+        p = p.slice(1+n[0]);
+        n.shift();
+        continue;
+      }
+      if (rngI(blk,as[0][3]).length) {
+        p = replace(p,blk,'');
+        if(!(n[0]-=rngL(blk))) {
+          p = p.slice(1+blk[0]);
+          n.shift();
+        }
+        continue;
+      }
+    }
+    log(p,n);
+    p = reverse(p); n = n.reverse();
+  } while(oldP !== p || n.length !== oldN.length);
+  const blks = p.match(/[#\?]+/g);
+  const mands = blks.filter(b=>/#/.test(b));
+  if (blks.every(b=>/^\?+$/.test(b)) && blks.length === n.length) 
+    return prd(blks.map((b,j)=>possibilities([b,[n[j]]],i+'.'+j)));
+  return -1;
+}
+
+function routine(p,n) {
+  let blk = nBlk(p,/^\?+(?=\.)/);
+  if (rngL(blk)<n[0]) 
+    p = replace(p,blk,'');
+  blk = nBlkU(p,/#+(?=\?)/g,n[0]);
+  if (blk[0]===0) {
+    p = p.slice(1+n[0]);
+    n.shift();
+    return;
   }
+  if (rngI(blk,as[0][3]).length) {
+    p = replace(p,blk,'');
+    if(!(n[0]-=rngL(blk))) {
+      p = p.slice(1+blk[0]);
+      n.shift();
+    }
+    return;
+  }
+  blk = nBlkU(p,/#+(?=\.)/g,n[0]);
+  if (blk.length) {
+    p = p.slice(1+n[0]);
+    n.shift();
+    return;
+  }
+  log(p,n);
 }
 
-function updatePattern(p,as) {
-  p = as.reduce((a,[,,m])=>replaceArea(a,m),p);
+function reverse(p) {
+  return p.split('').reverse().join('');
+}
+
+function addMandatory(p,as) {
+  p = as.reduce((a,[,,m])=>replace(a,m),p);
   return as.slice(1).reduce((a,[,p],i)=>
-    replaceArea(a,rngGap(as[i][1],p),'.'),p);
+    replace(a,rngGap(as[i][1],p),'.'),p);
 }
 
-function rangeLength(rng) {
+function nBlk(p,regex) {
+  const m = p.match(regex);
+  return m ? [m.index,m.index+m[0].length] : [];
+}
+
+function nBlkU(p,regex,l) {
+  return [...p.matchAll(regex)]
+    ?.filter(m=>m.index<=l)
+    .reduce((a,c)=>
+      rngU(a,[c.index,c[0].length+c.index]),[]) || [];
+}
+
+function rngL(rng) {
   return rng[1] - rng[0];
-}
-
-function borderedRange(rng) {
-  return [rng[0]-1, rng[1]+1];
-}
-
-function getRanges(p,regex) {
-  return Array.from(p.matchAll(regex),(m)=>
-    [m.index,m.index+m[0].length]);
 }
 
 function solve2(inp, l) {
@@ -63,7 +150,7 @@ function solve2(inp, l) {
   return null;
 }
 
-function replaceArea(str, rng, val = '#') {
+function replace(str, rng, val = '#') {
   if(!rng?.length) return str;
   const start = rng[0]!==-1 ? rng[0] : 0;
   let l = rng[1]-start;
@@ -73,7 +160,7 @@ function replaceArea(str, rng, val = '#') {
 
 function getAreas(nums,length) {
   return nums.map(ranges(length))
-    .map(([bl,ls,rs])=>[bl,rngUnion(ls,rs),rngIntersect(ls,rs),ls,rs]);
+    .map(([bl,ls,rs])=>[bl,rngU(ls,rs),rngI(ls,rs),ls]);
 }
 
 function ranges(length) {
@@ -84,19 +171,14 @@ function ranges(length) {
   }
 }
 
-function isInRange(rng1,rng2) {
-  if (!rng1.length || !rng2.length) return [];
-  return rngHelper(rng1,rng2).every((x,i)=>x===rng1[i]);
-}
-
-function rngUnion(rng1,rng2) {
+function rngU(rng1,rng2) {
   if (!rng1.length || !rng2.length)
     return !rng1.length ? (!rng2.length ? [] : rng2) : rng1;
   const [l1,r1] = rng1, [l2,r2] = rng2;
   return [Math.min(l1,l2),Math.max(r1,r2)];
 }
 
-function rngIntersect(rng1,rng2) {
+function rngI(rng1,rng2) {
   if (!rng1.length || !rng2.length) return [];
   const [maxL,minR] = rngHelper(rng1,rng2);
   return minR>=maxL?[maxL,minR]:[];

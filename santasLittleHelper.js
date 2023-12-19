@@ -31,8 +31,10 @@ function inRange(b1, b2) {
 }
 
 function create2DimArray(x, y, f) {
-  return [...Array(x)].map(() =>
-    [...Array(y)].fill(typeof f === 'function' ? f() : f));
+  return [...Array(x)].map((e,i) =>
+    typeof f === 'function'
+    ? [...Array(y)].map((e,j)=>f(i,j))
+    : [...Array(y)].fill(f));
 }
 
 function getRows(grid) {
@@ -50,7 +52,7 @@ function getGrid(lines, isCol) {
 
 function printMap(m, s, b) {
   if (b) m = m.map(r => r.slice(b[0][1], b[1][1])).slice(b[0][0], b[1][0]);
-  const map = typeof s === 'object' ? c=>s[c] : s ?? (c => c ? '#' : '.');
+  const map = typeof s === 'object' ? c=>s[c]: s ?? (c => c ? '#' : '.');
   return m.map(r => (map ? r.map(map) : r)
     .join('')).join('\n');
 }
