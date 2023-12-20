@@ -8,8 +8,7 @@ function solve1(inp,l) {
 }
 
 function count(n) {
-  return function inner(set) {
-    
+  return function inner(set)  {
     return 0;
   }
 }

@@ -1,0 +1,94 @@
+const { create2DimArray, printMap, frameIt } =
+  require('../../../santasLittleHelper.js');
+const { grid } = require('../../../parser.js');
+const { Heap } = require('heap-js');
+let input, log;
+
+const dirMap = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+const dirs = [">", "v", "<", "^"];
+
+function solve1(inp, l) {
+  input = inp, log = l;
+  const heap = new Heap((a, b) => a[5] - b[5]);
+  const w = input[0].length, h = input.length;
+  const dists = create2DimArray(w, h, () =>
+    [...Array(2)].map(() => [Number.MAX_VALUE, null]));
+  dists[0][0] = [...Array(2)].map(() => [0, []]);
+  heap.init([E(1, 0, 0, 0, 1),
+  E(2, 0, 0, 0, 2),
+  E(3, 0, 0, 0, 3),
+  E(0, 1, 0, 1, 1),
+  E(0, 2, 0, 1, 2),
+  E(0, 3, 0, 1, 3)]);
+  while (heap.length) {
+    log(heap.length + '-'.repeat(20));
+    for (const [x, y, o, d, c, h] of heap.top(3).sort((a, b) => a[5] - b[5]))
+      log(`${dirs[d].repeat(c)}[${x},${y}](${o}_${h})`);
+    const [x, y, o, d, c] = heap.pop();
+    const n = o + weight(x, y, d, c);
+    //log(c,dirs[d],x,y,`(${n})`);
+    if (n > dists[y][x][d % 2][0]) continue;
+    const opd = (d + 2) % 4, ord = (d + 1) % 2;
+    const px = x + dirMap[opd][0] * c, py = y + dirMap[opd][1] * c;
+    //log(px,py,opd,ord,c);
+    const path = dists[py][px][ord][1];
+    dists[y][x][d % 2] = [n, [...path, [d, c, x, y]]];
+    [...Array(2)].map((_, inc) => [(d + (inc ? 1 : 3)) % 4])
+      .map(([nd]) => [...Array(2)].map((_, i) =>
+        [x + dirMap[nd][0] * (i + 1), y + dirMap[nd][1] * (i + 1), nd, i + 1]).flat())
+      .filter(inGrid)
+      .forEach(([nx, ny, nd, nc]) =>
+        heap.push(E(nx, ny, n, nd, nc)));
+  }
+  log(frameIt(printMap(dists, d =>
+    rep(Math.min(...d.map(([d]) => d))))));
+  const goal = dists[dists.length - 1][dists[0].length - 1];
+  // const path = goal.map(d=>d.reduce((a,c)=>a[0]>c[0]?c:a))
+  //   .reduce((a,c)=>a[0]>c[0]?c:a)[1];
+  //path.forEach(([d,x,y])=>input[y][x]=dirs[d].blue);
+  // console.log();
+  // console.log(frameIt(printMap(input,d=>d)));
+  return Math.min(...goal.map(([d]) => d));
+}
+
+function E(x, y, v, d, c) {
+  return [x, y, v, d, c, dist(x, y, v, d, c)];
+}
+
+function rep(v) {
+  return v < 10 ? v : (v < 60 ? String.fromCharCode(v + 55) : '#');
+}
+
+function heu(x, y) {
+  return input[0].length + input.length - (x + y) - 2;
+}
+
+function weight(x, y, d, c) {
+  let sum = input[y][x];
+  const isV = d % 2, dec = d >> 1;
+  const ref = (isV ? y : x);
+  const start = ref + dec ? +1 : -1;
+  const end = ref + dec ? c : -c;
+  for (let i = end; i-- > start;)
+    sum += input[isV ? i : y][isV ? x : i];
+  return sum;
+}
+
+function dist(x, y, o, d, c) {
+  return heu(x, y) + weight(x, y, d, c) + o;
+}
+
+function inGrid([x, y]) {
+  return x >= 0 && x < input[0].length && y >= 0 && y < input.length;
+}
+
+function solve2(inp, l) {
+  input = inp, log = l;
+  return null;
+}
+
+function init(data, log) {
+  return grid(d => +d)(data);
+}
+
+module.exports = { init, solve1, solve2 }

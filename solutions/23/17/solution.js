@@ -1,4 +1,4 @@
-const {create2DimArray, printMap, frameIt} =
+const {create2DimArray, printMap, frameIt, rng} =
   require('../../../santasLittleHelper.js');
 const {grid} = require('../../../parser.js');
 const {Heap} = require('heap-js');
@@ -7,49 +7,58 @@ let input, log;
 const dirMap=[[1,0],[0,1],[-1,0],[0,-1]];
 const dirs=[">","v","<","^"];
 
-function solve1(inp,l) {
+function solve1(inp,l, min = 1, max = 3) {
   input = inp, log = l;
   const heap = new Heap((a,b)=>a[5]-b[5]);
-  const dists = create2DimArray(
-    input.length, input[0].length,
-    ()=>create2DimArray(4,4,[Number.MAX_VALUE,null]));
-  dists[0][0] = create2DimArray(4,4,[0,[]]);
-  heap.init([[1,0,0,0,1,heu(1,0,0),0,0],
-            [0,1,0,1,1,heu(0,1,0),0,0]]);
+  const w = input.length, h = input[0].length;
+  const dists = create2DimArray(w, h, ()=>
+    rng(0,2).map(()=>[Number.MAX_VALUE,null]));
+  dists[0][0] = rng(0,2).map(()=>[0,[]]);
+  heap.init(rng(min,max+1).reduce((a,i)=>
+    a.concat(rng(0,2).map(d=>[d?0:i,d?i:0,d,i]).filter(inGrid)
+      .map(([x,y,d,i])=>E(x,y,0,d,i))),[]));
   while(heap.length) {
-    const [x,y,o,d,c,,pd,pc] = heap.pop();
-    const n = o+input[y][x];
-    log(c,dirs[d],x,y,`(${n})`);
-    if(n>dists[y][x][d][c][0]) continue;
-    const px = x+dirMap[(d+2)%4][0], py = y+dirMap[(d+2)%4][1];
-    const path = dists[py][px][pd][pc][1];
-    dists[y][x][d][c]=[n,[...path,[d,x,y]]];
-    [...Array(4)].map((_,nd)=>
-      [x+dirMap[nd][0],y+dirMap[nd][1],nd,d===nd?c+1:1])
-      .filter(inGrid).filter(([,,nd,nc])=>d!==nd?d!==(nd+2)%2:nc<4)
-      .forEach(([nx,ny,nd,nc])=>
-        heap.push([nx,ny,n,nd,nc,heu(nx,ny,n),d,c]));
+    const [x,y,o,d,c] = heap.pop();
+    const n = o + weight(x,y,d,c);
+    if(n>=dists[y][x][d%2][0]) continue;
+    const opd = (d+2)%4, ord = (d+1)%2;
+    const px = x+dirMap[opd][0]*c, py = y+dirMap[opd][1]*c;
+    const path = dists[py][px][ord][1];
+    dists[y][x][d%2]=[n,[...path,[d,c,x,y]]];
+    rng(0,2).map((_,inc)=>(d+(inc?1:3))%4)
+      .map(nd=>rng(min,max+1).map(i=>
+        [x+dirMap[nd][0]*i,y+dirMap[nd][1]*i,nd,i]))
+      .flat().filter(inGrid).forEach(([nx,ny,nd,nc])=>
+        heap.push(E(nx,ny,n,nd,nc)));
   }
-  log(frameIt(printMap(dists,d=>
-    rep(Math.min(...d.map(d=>Math.min(...d.map(([d])=>d))))))));
-  const goal = dists[dists.length-1][dists[0].length-1];
-  const path = goal.map(d=>d.reduce((a,c)=>a[0]>c[0]?c:a))
-    .reduce((a,c)=>a[0]>c[0]?c:a)[1];
-  path.forEach(([d,x,y])=>input[y][x]=dirs[d].blue);
+  plotting(dists[w-1][h-1]);
+  return Math.min(...dists[w-1][h-1].map(([d])=>d));
+}
+
+function plotting(goal) {
+  const path = goal.reduce((a,c)=>a[0]>c[0]?c:a)[1];
+  input = input.map(r=>r.map(c=>`${c}`.grey));
+  path.forEach(([d,c,x,y])=>
+    [...Array(c)].forEach((_,i)=>
+      input[y+(d%2?(d>>1?i:-i):0)][x+(d%2?0:(d>>1?i:-i))]=dirs[d].red));
   console.log(frameIt(printMap(input,d=>d)));
-  return Math.min(...log(goal).map((d=>Math.min(...d.map(([d])=>d)))));
 }
 
-function rep(v) {
-  return v<10?v:(v<60 ? String.fromCharCode(v+55) : '#');
+function E(x,y,v,d,c) {
+  return [x,y,v,d,c,dist(x,y,v,d,c)];
 }
 
-function dist(x,y) {
+function heu(x,y) {
   return input[0].length+input.length-(x+y)-2;
 }
 
-function heu(x,y,o) {
-  return dist(x,y)+input[y][x]+o;
+function weight(x,y,d,c) {
+  return [...Array(c)].reduce((a,_,i)=>
+    a+input[y+(d%2?(d>>1?i:-i):0)][x+(d%2?0:(d>>1?i:-i))],0);
+}
+
+function dist(x,y,o,d,c) {
+  return heu(x,y) + weight(x,y,d,c) + o;
 }
 
 function inGrid([x,y]) {
@@ -57,8 +66,7 @@ function inGrid([x,y]) {
 }
 
 function solve2(inp,l) {
-  input = inp, log = l;
-  return null;
+  return solve1(inp,l,4,10);
 }
 
 function init(data,log) {
