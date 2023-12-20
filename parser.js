@@ -30,7 +30,6 @@ function lineWise(mappers = [], filters = []) {
   let q = [...mappers.map(m=>[m,true]),
            ...filters.map(f=>[f,false])];
   const lineWiseFactory = (lines) => {
-
     return q.reduce((a,[e,m])=>
         m?a.map(e):a.filter(e),lines);
   }

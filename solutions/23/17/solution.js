@@ -1,5 +1,7 @@
-const {create2DimArray, printMap, frameIt} = require('../../../santasLittleHelper.js');
+const {create2DimArray, printMap, frameIt} =
+  require('../../../santasLittleHelper.js');
 const {grid} = require('../../../parser.js');
+const {Heap} = require('heap-js');
 let input, log;
 
 const dirMap=[[1,0],[0,1],[-1,0],[0,-1]];
@@ -7,16 +9,15 @@ const dirs=[">","v","<","^"];
 
 function solve1(inp,l) {
   input = inp, log = l;
+  const heap = new Heap((a,b)=>a[5]-b[5]);
   const dists = create2DimArray(
     input.length, input[0].length,
     ()=>create2DimArray(4,4,[Number.MAX_VALUE,null]));
   dists[0][0] = create2DimArray(4,4,[0,[]]);
-  const q = [[1,0,0,0,1,heu(1,0,0),0,0]];
-  insertSorted(q,[0,1,0,1,1,heu(0,1,0),0,0]);
-  while(q.length) {
-    // log(q.map(([x,y,,d,c,h])=>
-    //   `${c}${dirs[d]}${x},${y}(${h})`).slice(0,2).join('\n'));
-    const [x,y,o,d,c,,pd,pc] = q.shift();
+  heap.init([[1,0,0,0,1,heu(1,0,0),0,0],
+            [0,1,0,1,1,heu(0,1,0),0,0]]);
+  while(heap.length) {
+    const [x,y,o,d,c,,pd,pc] = heap.pop();
     const n = o+input[y][x];
     log(c,dirs[d],x,y,`(${n})`);
     if(n>dists[y][x][d][c][0]) continue;
@@ -27,7 +28,7 @@ function solve1(inp,l) {
       [x+dirMap[nd][0],y+dirMap[nd][1],nd,d===nd?c+1:1])
       .filter(inGrid).filter(([,,nd,nc])=>d!==nd?d!==(nd+2)%2:nc<4)
       .forEach(([nx,ny,nd,nc])=>
-        insertSorted(q,[nx,ny,n,nd,nc,heu(nx,ny,n),d,c]));
+        heap.push([nx,ny,n,nd,nc,heu(nx,ny,n),d,c]));
   }
   log(frameIt(printMap(dists,d=>
     rep(Math.min(...d.map(d=>Math.min(...d.map(([d])=>d))))))));
@@ -49,12 +50,6 @@ function dist(x,y) {
 
 function heu(x,y,o) {
   return dist(x,y)+input[y][x]+o;
-}
-
-function insertSorted(q,e) {
-  const index = q.findIndex(hd=>hd[5]>e[5])
-  index!==-1?q.splice(index,0,e):q.push(e);
-  return q;
 }
 
 function inGrid([x,y]) {
