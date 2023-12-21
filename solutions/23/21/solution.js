@@ -1,88 +1,120 @@
-const {printMap, create2DimArray} = require('../../../santasLittleHelper.js');
+const {printMap, create2DimArray, frameIt} = require('../../../santasLittleHelper.js');
 const {grid} = require('../../../parser.js');
 let input, log;
 
-const dirMap=[[1,0],[0,1],[-1,0],[0,-1]];
-
-function solve1(inp,l, steps = 64) {
+function solve1(inp,l, steps = 6) {
   input = inp, log = l;
-  let starts = [];
-  let map = create2DimArray(input[0].length, input.length, false);
-  for (let i=input.length; i-->0;)
-    for (let j=input[i].length; j-->0;) {
-      if (input[i][j] === 'S')
-        starts = [[i,j]];
-        map[i][j] = input[i][j] === '#';
-    }
-  for (let i=steps; i-->0;) {
-    let next = new Set();
-    for (let [x,y] of starts)
-      for (let [dx,dy] of dirMap) {
-        let [nx,ny] = [x+dx,y+dy];
-        if (ny >= 0 && ny < map.length 
-            && nx >= 0 && nx < map[0].length
-            && !map[nx][ny])
-          next.add(nx+','+ny);
-      }
-    starts = Array.from(next).map(s=>s.split(',').map(n=>+n));
-  }
-  return starts.length;
+  const w = input[0].length, h = input.length;
+  const ms = getMasks(w,h);
+  const s = ms[5]&ms[4];
+  const a = getNum(input);
+  const cs = getCycle(steps,s,a,w,ms);
+  return count(cs[steps%2]);
 }
 
-function solve2(inp,l, steps = 50) {
+function solve2(inp,l, steps = 26501365) {
   input = inp, log = l;
-  let starts = [];
   const w = input[0].length, h = input.length;
-  for (let i=h; i-->0;)
-    for (let j=w; j-->0;) {
-      if (input[i][j] === 'S')
-        starts = [[i,j,0,0]];
-      input[i][j] = input[i][j] === '#';
-    }
-  const cache = new Map();
-  for (let i=h; i-->0;)
-    for (let j=w; j-->0;) {
-      if (!input[i][j]) {
-        let next = [];
-        for (let [dx,dy] of dirMap) {
-          let [nx,ny] = [j+dx,i+dy];
-          let ngx = 0, ngy = 0;
-          if (ny < 0) {
-            ngy--;
-            ny = (ny + h) % h;
-          } 
-          if (nx < 0) {
-            ngx--;
-            nx = (nx + w) % w;
-          } 
-          if (ny >= h) {
-            ngy++;
-            ny = ny % h;
-          } 
-          if (nx >= w) {
-            ngx++;
-            nx = nx % w;
-          }
-          if (!input[ny][nx])
-            next.push([nx,ny,ngx,ngy]);
-        }
-        cache.set(j*h+i, next);
-      }
-    }
+  const ms = getMasks(w,h);
+  const a = getNum(input);
+  const s = [[ms[3]&ms[2],ms[3]&ms[4],ms[3]&ms[0]],
+             [ms[5]&ms[2],ms[5]&ms[4],ms[5]&ms[0]],
+             [ms[1]&ms[2],ms[1]&ms[4],ms[1]&ms[0]]];
+  const cs = s.map(r=>r.map(e=>getCycle(steps,e,a,w,ms)));
+  const l1 = (w-1)/2;
+  const l2 = (steps-l1)/w;
+  const l4 = (l2-1)**2;
+  const l5 = l2**2;
+  let sum = l4*count(cs[1][1][steps%2]);
+  sum += l5*count(cs[1][1][(steps-1)%2]);
+  sum+= count(cs[1][0][l1]);
+  sum+= count(cs[1][2][l1]);
+  sum+= count(cs[0][1][l1]);
+  sum+= count(cs[2][1][l1]);
+  sum+= (l2-1)*count(cs[0][0][l1])+l2*count(cs[0][0][l1+w]);
+  sum+= (l2-1)*count(cs[0][2][l1])+l2*count(cs[0][2][l1+w]);
+  sum+= (l2-1)*count(cs[2][0][l1])+l2*count(cs[2][0][l1+w]);
+  sum+= (l2-1)*count(cs[2][2][l1])+l2*count(cs[2][2][l1+w]);
+  return sum;
+}
+
+function getCycle(steps,s,a,w,ms) {
+  const cs = [s];
+  const [rm,,lm] = ms;
   for (let i=steps; i-->0;) {
-    let n = new Set();
-    for (let [x,y,gx,gy] of starts) {
-      cache.get(x*h+y).map(s=>
-        s[0]+','+s[1]+','+(s[2]+gx)+','+(s[3]+gy))
-        .forEach(e=>n.add(e));
-    }
-    starts = Array.from(n).map(s=>s.split(',').map(n=>+n));
+    s = step(s,a,w,lm,rm);
+    if (cs.includes(s)) break;
+    cs.unshift(s);
   }
-  return starts.length;
+  return cs;
+}
+
+function step(s,a,w,lm,rm) {
+  const l = ((s>>1n)&~lm);
+  const r = ((s<<1n)&~rm);
+  const t = s<<BigInt(w);
+  const b = s>>BigInt(w);
+  const n = (l|r|t|b)&a;
+  return n;
+}
+
+function count(n) {
+ let count = 0;
+ while (n) {
+   count += (n&1n?1:0);
+   n >>= 1n;
+ }
+ return count;
+}
+
+function getNum(bg) {
+  return bg.flat().reduce((a,c)=>a<<1n|(c?1n:0n),0n);
+}
+
+function getGrid(w,h,n) {
+  a = [];
+  while(n) {
+    a.unshift((n & 1n) === 1n);
+    n >>= 1n;
+  }
+  return [...Array(w*h-a.length)].map(()=>false)
+    .concat(a).reduce((a,c,i)=>{
+      if (i%w===0) a.push([c]);
+      else a[a.length-1].push(c);
+      return a;
+    },[]);
+}
+
+function getMasks(w,h) {
+  const ms = [
+    getRightMask(w,h),
+    getBottomMask(w,h)
+  ];
+  ms[2] = ms[0]<<BigInt(w-1);
+  ms[3] = ms[1]<<BigInt(w*(h-1));
+  ms[4] = ms[0]<<BigInt((w-1)/2);
+  ms[5] = ms[1]<<BigInt(w*(h-1)/2);
+  return ms;
+}
+
+function getRightMask(w,h) {
+  return [...Array(h)]
+    .reduce((a,_,i)=>
+      a|1n<<BigInt(w*i),0n);
+}
+
+function getBottomMask(w) {
+  return [...Array(w)]
+    .reduce((a,_,i)=>
+      a|1n<<BigInt(i),0n);
+}
+
+function pr(w,h,n) {
+  return log(printMap(getGrid(w,h,n)));
 }
 
 function init(data,log) {
-  return grid()(data);
+  return grid((c)=>/[S\.]/.test(c))(data);
 }
 
-module.exports = {init, solve1, solve2}
+module.exports = {init, solve1, solve2};

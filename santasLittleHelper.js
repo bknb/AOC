@@ -16,10 +16,10 @@ function getBounds(a, r) {
   return [min, max];
 }
 
-function fillWithinBounds(a, [[x1,y1],[x2,y2]]) {
+function fillWithinBounds(a, [[x1,y1],[x2,y2]], f = true) {
   for (let i = ++x2; i-->x1;)
     for (let j = ++y2; j-->y1;)
-      a[i][j] = true;
+      a[i][j] = f;
 }
 
 function inBounds(x, [min, max]) {

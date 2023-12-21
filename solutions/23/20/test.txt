@@ -6,6 +6,6 @@ broadcaster -> a, b, c
 
 broadcaster -> a
 %a -> inv, con
-&inv -> b
 %b -> con
 &con -> output
+&inv -> b
