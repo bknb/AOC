@@ -9,13 +9,39 @@ function solve1(inp,l) {
 
 function count(n) {
   return function inner(set)  {
-    return 0;
+    let bc;
+    const ffs = {}, cos = {};
+    for (let [key,value] of Object.entries(set))
+      if (value[0] === null) bc = value.slice(1);
+      else value[0] ? ffs[key] = value.slice(1)
+        : cos[key] = value.slice(1);
+    const status = {...ffs};
+    for (let key of Object.keys(status))
+      status[key] = false;
+
+    let cl = 0,ch = 0, cycle = 0;
+
+    do {
+      cl++;cycle++;
+      const q = bc.map(key => [key,false]);
+      while (q.length) {
+        const [k,v] = q.shift();
+        if (ffs[k] && !v) q.push(...ffs[k].map(key => [key,true]));
+        if (cos[k]) {
+          if (v.length===1)
+            q.push([key,!v[0]]);
+          else
+        }
+      }
+    } while (status.values().some(on=>on))
+    
+    return cycle*cl*ch;
   }
 }
 
 function solve2(inp,l) {
   input = inp, log = l;
-  return null;
+  return input.map(count(10**14));
 }
 
 function init(data,log) {
