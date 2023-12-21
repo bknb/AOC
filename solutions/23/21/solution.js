@@ -21,20 +21,19 @@ function solve2(inp,l, steps = 26501365) {
              [ms[5]&ms[2],ms[5]&ms[4],ms[5]&ms[0]],
              [ms[1]&ms[2],ms[1]&ms[4],ms[1]&ms[0]]];
   const cs = s.map(r=>r.map(e=>getCycle(steps,e,a,w,ms)));
-  const l1 = (w-1)/2;
-  const l2 = (steps-l1)/w;
-  const l4 = (l2-1)**2;
-  const l5 = l2**2;
-  let sum = l4*count(cs[1][1][steps%2]);
-  sum += l5*count(cs[1][1][(steps-1)%2]);
-  sum+= count(cs[1][0][l1]);
-  sum+= count(cs[1][2][l1]);
-  sum+= count(cs[0][1][l1]);
-  sum+= count(cs[2][1][l1]);
-  sum+= (l2-1)*count(cs[0][0][l1])+l2*count(cs[0][0][l1+w]);
-  sum+= (l2-1)*count(cs[0][2][l1])+l2*count(cs[0][2][l1+w]);
-  sum+= (l2-1)*count(cs[2][0][l1])+l2*count(cs[2][0][l1+w]);
-  sum+= (l2-1)*count(cs[2][2][l1])+l2*count(cs[2][2][l1+w]);
+  const hg = (w-1)/2;
+  const sg = (steps-hg)/w;
+  const ng1 = (sg-1)**2;
+  const ng2 = sg**2;
+  let sum = ng1*count(cs[1][1][steps%2]);
+  sum += ng2*count(cs[1][1][(steps-1)%2]);
+  for (let i = 2; i-->0;)
+    for (let j = 0; j < 3; j+=2)
+      sum+= count(cs[i?1:j][i?j:1][hg]);
+  for (let i = 0; i < 3; i+=2)
+    for (let j = 0; j < 3; j+=2)
+      sum+= (sg-1)*count(cs[i][j][hg])
+        + sg*count(cs[i][j][hg+w]);
   return sum;
 }
 
@@ -107,10 +106,6 @@ function getBottomMask(w) {
   return [...Array(w)]
     .reduce((a,_,i)=>
       a|1n<<BigInt(i),0n);
-}
-
-function pr(w,h,n) {
-  return log(printMap(getGrid(w,h,n)));
 }
 
 function init(data,log) {
