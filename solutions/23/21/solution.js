@@ -1,11 +1,10 @@
-const {printMap, create2DimArray, frameIt} = require('../../../santasLittleHelper.js');
 const {grid} = require('../../../parser.js');
 let input, log;
 
 function solve1(inp,l, steps = 6) {
   input = inp, log = l;
-  const w = input[0].length, h = input.length;
-  const ms = getMasks(w,h);
+  const w = input[0].length;
+  const ms = getMasks(w);
   const s = ms[5]&ms[4];
   const a = getNum(input);
   const cs = getCycle(steps,s,a,w,ms);
@@ -14,13 +13,14 @@ function solve1(inp,l, steps = 6) {
 
 function solve2(inp,l, steps = 26501365) {
   input = inp, log = l;
-  const w = input[0].length, h = input.length;
-  const ms = getMasks(w,h);
+  const w = input[0].length;
+  const ms = getMasks(w);
   const a = getNum(input);
   const s = [[ms[3]&ms[2],ms[3]&ms[4],ms[3]&ms[0]],
              [ms[5]&ms[2],ms[5]&ms[4],ms[5]&ms[0]],
              [ms[1]&ms[2],ms[1]&ms[4],ms[1]&ms[0]]];
-  const cs = s.map(r=>r.map(e=>getCycle(steps,e,a,w,ms)));
+  const cs = s.map(r=>
+    r.map(e=>getCycle(steps,e,a,w,ms)));
   const hg = (w-1)/2;
   const sg = (steps-hg)/w;
   const ng1 = (sg-1)**2;
@@ -70,34 +70,20 @@ function getNum(bg) {
   return bg.flat().reduce((a,c)=>a<<1n|(c?1n:0n),0n);
 }
 
-function getGrid(w,h,n) {
-  a = [];
-  while(n) {
-    a.unshift((n & 1n) === 1n);
-    n >>= 1n;
-  }
-  return [...Array(w*h-a.length)].map(()=>false)
-    .concat(a).reduce((a,c,i)=>{
-      if (i%w===0) a.push([c]);
-      else a[a.length-1].push(c);
-      return a;
-    },[]);
-}
-
-function getMasks(w,h) {
+function getMasks(w) {
   const ms = [
-    getRightMask(w,h),
-    getBottomMask(w,h)
+    getRightMask(w),
+    getBottomMask(w)
   ];
   ms[2] = ms[0]<<BigInt(w-1);
-  ms[3] = ms[1]<<BigInt(w*(h-1));
+  ms[3] = ms[1]<<BigInt(w*(w-1));
   ms[4] = ms[0]<<BigInt((w-1)/2);
-  ms[5] = ms[1]<<BigInt(w*(h-1)/2);
+  ms[5] = ms[1]<<BigInt(w*(w-1)/2);
   return ms;
 }
 
-function getRightMask(w,h) {
-  return [...Array(h)]
+function getRightMask(w) {
+  return [...Array(w)]
     .reduce((a,_,i)=>
       a|1n<<BigInt(w*i),0n);
 }
