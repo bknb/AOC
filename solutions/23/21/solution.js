@@ -3,7 +3,7 @@ let input, log;
 
 function solve1(inp,l, steps = 6) {
   input = inp, log = l;
-  const w = input[0].length;
+  const w = input.length;
   const ms = getMasks(w);
   const s = ms[5]&ms[4];
   const a = getNum(input);
@@ -23,10 +23,8 @@ function solve2(inp,l, steps = 26501365) {
     r.map(e=>getCycle(steps,e,a,w,ms)));
   const hg = (w-1)/2;
   const sg = (steps-hg)/w;
-  const ng1 = (sg-1)**2;
-  const ng2 = sg**2;
-  let sum = ng1*count(cs[1][1][steps%2]);
-  sum += ng2*count(cs[1][1][(steps-1)%2]);
+  let sum = (sg-1)**2*count(cs[1][1][steps%2]);
+  sum += sg**2*count(cs[1][1][(steps-1)%2]);
   for (let i = 2; i-->0;)
     for (let j = 0; j < 3; j+=2)
       sum+= count(cs[i?1:j][i?j:1][hg]);
