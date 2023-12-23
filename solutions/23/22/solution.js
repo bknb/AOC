@@ -4,43 +4,51 @@ let input, log;
 
 function solve1(inp,l) {
   input = inp, log = l;
-  input = input.map(c=>c.sort(([,,z1],[,,z2])=>z1-z2))
+  let bs = [...input].map(b=>[...b].sort(([,,z1],[,,z2])=>z1-z2))
     .sort(([[,,z1]],[[,,z2]])=>z1-z2);
+  bs.forEach(()=>bs=bs.map(fall));
+  return log(bs).filter(disolvable).length;
+}
 
-  for (let i = 0; i < input.length; i++) {
-    input[i] = fall(input[i],input.slice(0,i));
-    input.sort(([[,,z1]],[[,,z2]])=>z1-z2)
+function fall(b,i,bs) {
+  return getLoweset(
+    b, bs.slice(0,i)
+    .filter(([,[,,z]])=>z<b[0][2])
+    .sort(([,[,,z1]],[,[,,z2]])=>z1-z2));
+
+  function getLoweset(b,lbs) {
+    const newB = (z)=>
+      [[b[0][0],b[0][1],z],[b[1][0],b[1][1],b[1][2]-b[0][2]+z]]
+    for (let i=lbs.length;i-->0;)
+      if (overlap(b,lbs[i]))
+        return newB(lbs[i][1][2]+1);
+    return newB(1);
   }
-
-  log(input)
-  
-  return input.filter(disolvable).length;
 }
 
 function disolvable(e,i,arr) {
-  const allOther = arr.slice(0,i).concat(arr.slice(i+1));
   return arr.slice(i+1)
     .filter(([[,,z]])=>z===e[1][2]+1)
     .filter(o=>overlap(e,o))
-    .filter(o=>fall(o,allOther)[0][2]!==o[0][2])
+    .filter(o=>arr.filter(([,[,,z]])=>z===o[0][2]-1)
+      .filter(d=>overlap(o,d)).length<2)
     .length === 0;
 }
 
-function fall (e,arr) {
-  const lower = arr
-    .filter(([,[,,z2]])=>z2<e[0][2])
-    .sort(([,,z1],[,,z2])=>z2-z1);
-  const [[x1,y1,z1],[x2,y2,z2]] = e;
-  for (let j=lower.length;j-->0;)
-    if (overlap(lower[j],e))
-      return [[x1,y1,lower[j][1][2]+1],
-        [x2,y2,lower[j][1][2]+z2-z1+1]];
-  return [[x1,y1,1],[x2,y2,1]];
+function willFall(e,arr) {
+  const bwf = arr
+    .filter(([[,,z]])=>z===e[1][2]+1)
+    .filter(o=>overlap(e,o))
+    .filter(o=>arr.filter(([,[,,z]])=>z===o[0][2]-1)
+      .filter(d=>overlap(o,d)).length<2);
+  if (!bwf.length) return bwf;
+  const set = new Set(bwf.map(b=>b.map(es=>es.join()).join('|')));
+  bwf.forEach(b=>
+    willFall(b,arr).forEach(wf=>set.add(log(wf))));
+  return Array.from(set);
 }
 
 function overlap([[x11,y11],[x12,y12]],[[x21,y21],[x22,y22]]) {
-  // log([[x11,x12],[x21,x22],intersects(x11,x12,x21,x22)],
-  //     [[y11,y12],[y21,y22],intersects(y11,y12,y21,y22)])
   return intersects(x11,x12,x21,x22) && intersects(y11,y12,y21,y22);
 }
 
@@ -54,8 +62,16 @@ function intersects(r11,r12,r21,r22) {
 
 function solve2(inp,l) {
   input = inp, log = l;
-  return null;
+  let bs = [...input].map(b=>[...b].sort(([,,z1],[,,z2])=>z1-z2))
+    .sort(([[,,z1]],[[,,z2]])=>z1-z2);
+  bs.forEach(()=>bs=bs.map(fall));
+
+  bs.filter(([,,z])=>z===1).map([])
+  
+  return log(bs.map((b,i)=>willFall(b,bs.slice(i+1)))).reduce((a,c)=>a+c.length,0);
 }
+
+function decoTouching()
 
 function init(data,log) {
   return lineWise().match()

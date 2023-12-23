@@ -19,8 +19,8 @@ function solve2(inp,l, steps = 26501365) {
   const s = [[ms[3]&ms[2],ms[3]&ms[4],ms[3]&ms[0]],
              [ms[5]&ms[2],ms[5]&ms[4],ms[5]&ms[0]],
              [ms[1]&ms[2],ms[1]&ms[4],ms[1]&ms[0]]];
-  const cs = s.map(r=>
-    r.map(e=>getCycle(steps,e,a,w,ms)));
+  const cs = s.map(r=>r.map(e=>
+    getCycle(steps,e,a,w,ms)));
   const hg = (w-1)/2;
   const sg = (steps-hg)/w;
   let sum = (sg-1)**2*count(cs[1][1][steps%2]);
