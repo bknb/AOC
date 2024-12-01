@@ -35,12 +35,9 @@ function solve2(inp,l) {
   const w = input.length;
   const bw = BigInt(w);
   const ms = getMasks(w);
-  const a = getNum(input.map(r=>
-    r.map(c=>/[^#]/.test(c))));
   const start = ms[3]&a, end = ms[1]&a;
   const crs = getCrossings(w,a);
   const g = getGraph(bw,a,crs);
-  log('finished graph');
   let [s,d] = getNext(start,0n,a,bw);
   return d+getLongestPath(s, [start]);
   
@@ -60,19 +57,17 @@ function move(s,x,y,w) {
 }
 
 function crossingBlockMask(w) {
-  const bw = BigInt(w);
-  return (2n|(7n<<bw)|(2n<<(bw<<1n)))<<BigInt(w**2-1);
+  return binaryMask([0b010n,0b111n,0b010n],w);
 }
 
 function clearMask(w) {
-  const bw = BigInt(w);
-  return (7n|(5n<<bw)|(7n<<(bw<<1n)))<<BigInt(w**2-1);
+  return binaryMask([0b000n,0b010n,0b000n],w);
 }
 
 function binaryMask(bis,w) {
   const bw = BigInt(w);
-  return bis.reduce((a,c,i)=>
-    a|=c<<bw*BigInt(i))<<(bw**2n)-1n;
+  const m = bis.reduce((a,c,i)=>a|=c<<bw*BigInt(i));
+  return m<<(bw**2n-1n);
 }
 
 function getNext(s,p,a,w) {
@@ -109,7 +104,7 @@ function getCrossings(w,a) {
     for (let j=w;j-->2;) {
       const cr = a&move(crsc,i,j,w);
       if (count(cr)>3)
-        crs.push(cr&~move(clm,i,j,w));
+        crs.push(cr&move(clm,i,j,w));
     }
   return crs;
 }

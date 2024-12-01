@@ -146,6 +146,22 @@ function dist(elems, buckets, acc = []) {
                   .concat([[elems[0],bs[0]]]))).flat();
 }
 
+function insert(arr, n) {
+  arr.splice(sortIndex(arr,n), 0, n);
+}
+
+function sortIndex(arr, n) {
+  let low = 0,
+      high = arr.length;
+
+  while (low < high) {
+    const mid = (low + high) >>> 1;
+    if (arr[mid] < n) low = mid + 1;
+    else high = mid;
+  }
+  return low;
+}
+
 function combi(arr,n) {
   if (n === 0) return [];
   if (n === 1) return [...arr.map(x=>[x])];
@@ -160,6 +176,7 @@ module.exports = {
   fillWithinBounds,
   inBounds,
   inRange,
+  insert,
   create2DimArray,
   rngIntersect,
   sumOfSums,
