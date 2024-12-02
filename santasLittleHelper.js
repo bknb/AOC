@@ -170,6 +170,14 @@ function combi(arr,n) {
     .map(y=>y.concat([x]))).flat();
 }
 
+function count(arr, f = x=>x) {
+  return arr.filter(f).length;
+}
+
+function allBut(arr, i) {
+  return arr.filter((x,j)=>j!==i);
+}
+
 module.exports = {
   getBounds,
   findCoordinates,
@@ -188,6 +196,8 @@ module.exports = {
   getRows,
   getCols,
   getGrid,
+  allBut,
+  count,
   combi,
   flip,
   dist,

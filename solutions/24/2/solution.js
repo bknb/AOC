@@ -1,3 +1,4 @@
+const { allBut, count } = require('../../../santasLittleHelper.js');
 const {linify, lineWise} = require('../../../parser.js');
 let input, log;
 
@@ -8,16 +9,14 @@ const isSafe = row => row.slice(1)
 
 function solve1(inp,l) {
   input = inp, log = l;
-  return input.filter(isSafe).length;
+  return count(input, isSafe);
 }
 
 function solve2(inp,l) {
   input = inp, log = l;
-  return input.map(row=>
-    [row,...row.map((x,i,arr)=>
-      arr.filter((y,j)=>j!==i))]
-    .some(isSafe))
-    .filter(x=>x).length;
+  return count(input.map(row=>
+    [row,...row.map((x,i,arr)=>allBut(arr,i))]
+    .some(isSafe)));
 }
 
 function init(data,log) {
