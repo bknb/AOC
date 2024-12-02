@@ -17,12 +17,12 @@ const enrichSubs = row =>
     [row,...row.map((x,i,arr)=>allBut(arr,i))]
 
 function solve1(input) {
-  return count(input, isSafe2);
+  return count(input, isSafe);
 }
 
 function solve2(input) {
   return count(input.map(row =>
-    enrichSubs(row).some(isSafe2)));
+    enrichSubs(row).some(isSafe)));
 }
 
 function init(data) {
