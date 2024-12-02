@@ -1,27 +1,24 @@
 const { allBut, count } = require('../../../santasLittleHelper.js');
 const {linify, lineWise} = require('../../../parser.js');
-let input, log;
 
 const isSafe = row => row.slice(1)
-    .map((x,i)=>log([row[i]>x,Math.abs(row[i]-x)]))
+    .map((x,i)=>[row[i]>x,Math.abs(row[i]-x)])
     .every(([inc,delta],i,[[first]])=>
       inc===first&&delta>0&&delta<4);
 
 const enrichSubs = row =>
     [row,...row.map((x,i,arr)=>allBut(arr,i))]
 
-function solve1(inp,l) {
-  input = inp, log = l;
+function solve1(input) {
   return count(input, isSafe);
 }
 
-function solve2(inp,l) {
-  input = inp, log = l;
+function solve2(input) {
   return count(input.map(row =>
     enrichSubs(row).some(isSafe)));
 }
 
-function init(data,log) {
+function init(data) {
   return lineWise().chunkify().numberfy()(linify(data));
 }
 
