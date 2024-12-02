@@ -61,7 +61,7 @@ function solve2(inp,l) {
 }
 
 function init(data,log) {
-  return lineWise().match()
+  return lineWise().chunkify()
     .map(([a,b,c,d,e,f])=>[[+a,+b,+c],[+d,+e,+f]])(linify(data));
 }
 

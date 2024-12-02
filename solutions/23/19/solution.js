@@ -52,7 +52,7 @@ function init(data,log) {
     a[l].unshift(r.match(/\w+(?=})/)[0]);
     return a;
   },{});
-  sets[1] = lineWise().match(/\d+/g).numberfy()(linify(sets[1]));
+  sets[1] = lineWise().chunkify(/\d+/g).numberfy()(linify(sets[1]));
   return sets;
 }
 

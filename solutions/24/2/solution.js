@@ -20,7 +20,7 @@ function solve2(inp,l) {
 }
 
 function init(data,log) {
-  return lineWise().match().numberfy()(linify(data));
+  return lineWise().chunkify().numberfy()(linify(data));
 }
 
 module.exports = {init, solve1, solve2}

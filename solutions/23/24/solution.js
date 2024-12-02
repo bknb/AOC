@@ -34,7 +34,7 @@ function solve2(inp,l) {
 }
 
 function init(data,log) {
-  return lineWise().match().numberfy()
+  return lineWise().chunkify().numberfy()
     .map(([a,b,c,d,e,f])=>[[a,b,c],[d,e,f]])(linify(data));
 }
 

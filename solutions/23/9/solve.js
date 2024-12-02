@@ -26,7 +26,7 @@ function solve2(input) {
 }
 
 function init(data) {
-  input = lineWise().match().numberfy()(data);
+  input = lineWise().chunkify().numberfy()(data);
 }
 
 function solve(input, part) {

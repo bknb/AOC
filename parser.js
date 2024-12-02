@@ -49,7 +49,7 @@ function lineWise(mappers = [], filters = []) {
     return lineWiseFactory;
   }
 
-  lineWiseFactory.match = (regex = /[-\w]+/g) => {
+  lineWiseFactory.chunkify = (regex = /[-\w]+/g) => {
     q.push([(line) => line.match(regex),true]);
     return lineWiseFactory;
   }

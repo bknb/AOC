@@ -110,7 +110,7 @@ function solve2(inp,l) {
 
 function init(data,log) {
   return multiSet().mapper(linify)(data)
-    .map(lineWise().match(/[%&]|\w+/g)
+    .map(lineWise().chunkify(/[%&]|\w+/g)
          .map(([o,...rest])=>/[%&]/.test(o)
            ?[o==='%',...rest]:[null,o,...rest]))
     .map(l=>l.reduce((a,[ff,o,...i])=>{

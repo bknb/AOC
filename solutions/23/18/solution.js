@@ -19,7 +19,7 @@ function solve2(input) {
 }
 
 function init(data) {
-  return lineWise().match().map(([a,b,c])=>
+  return lineWise().chunkify().map(([a,b,c])=>
     [letterDir[a],+b,c])(linify(data));
 }
 

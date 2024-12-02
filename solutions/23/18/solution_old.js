@@ -48,7 +48,7 @@ function solve2(inp,l) {
 }
 
 function init(data,log) {
-  return lineWise().match().map(([a,b,c])=>
+  return lineWise().chunkify().map(([a,b,c])=>
     [letterDir[a],+b,c])(linify(data));
 }
 

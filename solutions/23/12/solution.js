@@ -206,7 +206,7 @@ function unfold([pattern,nums]) {
 }
 
 function init(data, log) {
-  return lineWise().match(/[^ ,]+/g)
+  return lineWise().chunkify(/[^ ,]+/g)
     .map(([springs, ...nums]) => 
       [springs,nums.map(d => +d)])(linify(data));
 }
