@@ -3,8 +3,8 @@ let input, log;
 
 const isSafe = row => row.slice(1)
     .map((x,i)=>log([row[i]>x,Math.abs(row[i]-x)]))
-    .map(([inc,delta])=>log([inc,delta>0&&delta<4]))
-    .every(([inc,inRange],i,arr)=>inc===arr[0][0]&&inRange);
+    .every(([inc,delta],i,[[first]])=>
+      inc===first&&delta>0&&delta<4);
 
 function solve1(inp,l) {
   input = inp, log = l;
