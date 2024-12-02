@@ -7,6 +7,9 @@ const isSafe = row => row.slice(1)
     .every(([inc,delta],i,[[first]])=>
       inc===first&&delta>0&&delta<4);
 
+const enrichSubs = row =>
+    [row,...row.map((x,i,arr)=>allBut(arr,i))]
+
 function solve1(inp,l) {
   input = inp, log = l;
   return count(input, isSafe);
@@ -14,9 +17,8 @@ function solve1(inp,l) {
 
 function solve2(inp,l) {
   input = inp, log = l;
-  return count(input.map(row=>
-    [row,...row.map((x,i,arr)=>allBut(arr,i))]
-    .some(isSafe)));
+  return count(input.map(row =>
+    enrichSubs(row).some(isSafe)));
 }
 
 function init(data,log) {
