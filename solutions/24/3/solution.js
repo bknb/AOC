@@ -10,10 +10,10 @@ function solve1(inp,l) {
 function solve2(inp,l) {
   input = inp, log = l;
   return input
-    .map(x=>x.startsWith('d')?/o\(/.test(x):x.match(/\d+/g))
+    .map(x=>x.match(/\d+/g)||/o\(/.test(x))
     .reduce(([r,t],x)=>
       typeof x === 'boolean' ? [r,x] :
-      (t?[r+x[0]*x[1],t]:[r,t]), [0,true])[0];
+      [t?r+x[0]*x[1]:r,t], [0,true])[0];
 }
 
 function init(data,log) {
