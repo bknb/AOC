@@ -1,7 +1,6 @@
 const { allBut, count, rng } = require('../../../santasLittleHelper.js');
 const {linify, lineWise} = require('../../../parser.js');
 
-
 const isSafe = row => row.slice(1)
     .map((x,i)=>[row[i]>x,Math.abs(row[i]-x)])
     .every(([inc,delta],i,[[first]])=>
