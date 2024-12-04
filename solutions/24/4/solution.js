@@ -23,7 +23,7 @@ function check1(i,j,dir,input) {
     case 4: x++; case 5: y--; break;
     case 6: y--; case 7: x--; break;
   }
-  if (input[x]?.[y] === undefined) return false;
+  if (!input[x]?.[y]) return false;
   return input[x][y] === input[i][j]+1
     && check1(x,y,dir,input);
 }
