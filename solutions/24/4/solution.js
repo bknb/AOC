@@ -41,13 +41,17 @@ function count2(i,j,input) {
 
 function check2(i,j,input) {
   if (!(i && i<input.length-1)) return false;
-  const edges = [0,1].map(x=>[0,1].map(y=>
-    input[i+(x?1:-1)][j+(y?1:-1)])).flat();
+  const edges = getEdges(i,j,input);
   return edges.every(x=>!isNaN(x)&&x%2)
     && edges[0] !== edges[3] 
     && (edges[0] === edges[1] 
         ? edges[0] !== edges[2]
         : edges[0] === edges[2]);
+}
+
+function getEdges(i,j,input) {
+  return [0,1].map(x=>[0,1].map(y=>
+    input[i+(x?1:-1)][j+(y?1:-1)])).flat();
 }
 
 function mapGrid(input, func) {
