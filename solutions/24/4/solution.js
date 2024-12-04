@@ -37,7 +37,7 @@ function check2(i,j,input) {
   if (!(i && i<input.length-1)) return false;
   const edges = [0,1].map(x=>[0,1].map(y=>
     input[i+(x?1:-1)][j+(y?1:-1)])).flat();
-  return edges.every(x=>[1,3].includes(x))
+  return edges.every(x=>!isNaN(x)&&x%2)
     && edges[0] !== edges[3] 
     && (edges[0] === edges[1] 
         ? edges[0] !== edges[2]
