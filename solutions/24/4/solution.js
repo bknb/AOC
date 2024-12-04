@@ -11,7 +11,8 @@ function solve2(input) {
 
 function count1(i,j,input) {
   if (input[i][j]) return 0;
-  return rng(0,8).filter(k=>check1(i,j,k,input)).length;
+  return rng(0,8).filter(k=>
+    check1(i,j,k,input)).length;
 }
 
 function check1(i,j,dir,input) {
@@ -45,11 +46,15 @@ function check2(i,j,input) {
 }
 
 function mapGrid(input, func) {
-  return input.map((x,i)=>x.map((y,j)=>func(i,j,input)));
+  return input.map((x,i)=>
+    x.map((y,j)=>
+      func(i,j,input)));
 }
 
 function sumGrid(grid) {
-  return grid.reduce((a,c)=>(a+c.reduce((a,c)=>(a+c),0)),0);
+  return grid.reduce((a,c)=>
+    (a+c.reduce((a,c)=>
+      (a+c),0)),0);
 }
 
 function init(data) {
