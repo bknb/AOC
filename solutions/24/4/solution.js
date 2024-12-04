@@ -17,6 +17,13 @@ function count1(i,j,input) {
 
 function check1(i,j,dir,input) {
   if (input[i][j] === 3) return true;
+  const [x,y] = getNext(i,j,dir);
+  if (!input[x]?.[y]) return false;
+  return input[x][y] === input[i][j]+1
+    && check1(x,y,dir,input);
+}
+
+function getNext(i,j,dir) {
   let x = i, y = j;
   switch(dir) {
     case 0: x--; case 1: y++; break;
@@ -24,9 +31,7 @@ function check1(i,j,dir,input) {
     case 4: x++; case 5: y--; break;
     case 6: y--; case 7: x--; break;
   }
-  if (!input[x]?.[y]) return false;
-  return input[x][y] === input[i][j]+1
-    && check1(x,y,dir,input);
+  return [x,y];
 }
 
 function count2(i,j,input) {
