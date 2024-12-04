@@ -18,9 +18,9 @@ function check1(i,j,dir,input) {
   if (input[i][j] === 3) return true;
   let x = i, y = j;
   switch(dir) {
-    case 0: x++; case 1: y--; break;
-    case 2: x--; case 3: y++; break;
-    case 4: y++; case 5: x++; break;
+    case 0: x--; case 1: y++; break;
+    case 2: y++; case 3: x++; break;
+    case 4: x++; case 5: y--; break;
     case 6: y--; case 7: x--; break;
   }
   if (input[x]?.[y] === undefined) return false;
